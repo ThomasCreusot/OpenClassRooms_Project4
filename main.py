@@ -92,8 +92,8 @@ class Tournament:
         pass
 
 
-    def SwissAlgorithm_applied_to_the_tournament(self):
-        """Returns pairs of players for matches of a round"""
+    def SwissAlgorithm_applied_to_the_tournament_by_rank_classification(self): #serait interessant de definir cette méthode à l'echelle du round, les deux sont possibles, jepars sur l'echelle tournament
+        """Returns pairs of players for matches of a round, based on their classification"""
 
         # 1.	Au début du premier tour, triez tous les joueurs en fonction de leur classement
         #essayons deja de lister les joueurs d'un tournois, peu importe l'ordre
@@ -110,24 +110,53 @@ class Tournament:
         lower_half_of_players_sorted_by_ranks = all_players_of_tournament_sorted_by_ranks[int(len(all_players_of_tournament_sorted_by_ranks)/2):int(len(all_players_of_tournament_sorted_by_ranks))] #4:8 --> 4,5,6,7
         #Note : j'utilise int() et pas "round" car on devrait avoir un nombre pair de joueurs
 
-        #3. L'ordinateur génère des paires de joueurs pour le premier tour
-        if (len(higher_half_of_players_sorted_by_ranks)) == (len(lower_half_of_players_sorted_by_ranks)): #verification qu'on a deux listes de meme longueur
-            matches=[]
-            for x in range(0,(len(higher_half_of_players_sorted_by_ranks))):
-
-            
-                match = (higher_half_of_players_sorted_by_ranks[x], lower_half_of_players_sorted_by_ranks[x])
-                matches.append(match)
-            print("matches of the round" + str(matches))
-
         # 2(suite) : Le meilleur joueur de la moitié supérieure est jumelé avec le meilleur joueur de la moitié 
         # inférieure, et ainsi de suite. Si nous avons huit joueurs triés par rang, alors le joueur 1 est jumelé avec le
         #  joueur 5, le joueur 2 est jumelé avec le joueur 6, etc
 
+        if (len(higher_half_of_players_sorted_by_ranks)) == (len(lower_half_of_players_sorted_by_ranks)): #verification qu'on a deux listes de meme longueur
+            #Pairs: variable dans laquelle on va stocker les paires
+            pairs = []
+            for x in range(0,(len(higher_half_of_players_sorted_by_ranks))):
+                pair = (higher_half_of_players_sorted_by_ranks[x], lower_half_of_players_sorted_by_ranks[x])
+                pairs.append(pair)
+            #print("pairs, established from rank of players " + str(pairs))
+
+        else:
+            print("event number of players")
+
+        return pairs
+
+        #3.	Au prochain tour, triez tous les joueurs en fonction de leur nombre total de points (perso:classement/rang 
+        # semble independent du tournois alors que nombre de points est relatif au joueur au sein du tournois). Si 
+        # plusieurs joueurs ont le même nombre de points, triez-les en fonction de leur rang.
+        #--> nouvelle fonction
 
 
-        return all_players_of_tournament_sorted_by_ranks
+    def SwissAlgorithm_applied_to_the_tournament_by_score_classification(self, previous_matches_tuple_representation): 
+        """Returns pairs of players for matches of a round, based on their number of points"""
 
+        #a faire une fois que j'aurai effectué le premier tour, avec un match, car c'est dans le match qu'on aura accès aux scores
+        #print(previous_matches)
+        #j'ai des tuples (4 maximum, si j'ai 8 joueurs)
+        #chaque tuple contient une liste : un joueur et son score, c'est ça qui m'interesse : les récupérer et les mettre dans une meme liste: ma liste de joueurs avec leur score pour le prochain round
+        
+        list_of_players_and_their_score_for_the_next_round = []
+
+        for previous_match_tuple_representation in previous_matches_tuple_representation:
+            #print("_________")
+            #print(previous_match_tuple_representation)
+            for player_and_its_score in previous_match_tuple_representation:
+                list_of_players_and_their_score_for_the_next_round.append(player_and_its_score) #print(list_of_players_and_their_score_for_the_next_round) : ok
+        
+        list_of_players_and_their_score_for_the_next_round_classified_by_point = sorted(list_of_players_and_their_score_for_the_next_round, key=lambda x: x[1], reverse=True) #x[1] : le score; x[0] : l'instance du joueur
+        print(list_of_players_and_their_score_for_the_next_round_classified_by_point) #résultat ok
+
+        #Si plusieurs joueurs ont le même nombre de points, triez-les en fonction de leur rang.
+        for i in range(len(list_of_players_and_their_score_for_the_next_round_classified_by_point)-1):
+            if list_of_players_and_their_score_for_the_next_round_classified_by_point[i][1] == list_of_players_and_their_score_for_the_next_round_classified_by_point[i+1][1]:
+                print("deux joueurs ont le même score") #REPRENDRE ICI : il faut trier list_of_players_and_their_score_for_the_next_round_classified_by_point[i][1] et list_of_players_and_their_score_for_the_next_round_classified_by_point[i+1][1] selon leur rank (déja fait dans une autre méthode, la difficulté sera de ne pas toucher au reste de la liste je pense)
+        return "à finir"
 
 class Rounds:
     """Represents a round"""
@@ -145,15 +174,18 @@ class Rounds:
 class Matches:
     """Represent a match"""
 
-    def __init__(self, white_pieces_player_instance, white_pieces_player_score ,black_pieces_player_instance, black_pieces_player_score, match_tuple_representation = ()) :
-        self.white_pieces_player_instance = white_pieces_player_instance
-        self.white_pieces_player_score = white_pieces_player_score
-        self.black_pieces_player_instance = black_pieces_player_instance
-        self.black_pieces_player_score = black_pieces_player_score
-        match_tuple_representation = ([white_pieces_player_instance, white_pieces_player_score], [black_pieces_player_instance, black_pieces_player_score])
-        #print(match_tuple_representation)
-#matchTest = Matches("player1", 2, "player2", 1)
+    def __init__(self, player_1_instance, player_2_instance, player_1_score=0, player_2_score =0) : #je mets des scores par défaut de 0, on modifiera à la fin du match
+        self.player_1_instance = player_1_instance
+        self.player_2_instance = player_2_instance
+        self.player_1_score = player_1_score
+        self.player_2_score = player_2_score
 
+
+    def match_tuple_representation(self):
+        self.match_tuple_representation = ([self.player_1_instance, self.player_1_score], [self.player_2_instance, self.player_2_score])
+
+        print(self.match_tuple_representation)
+        return self.match_tuple_representation
 
 
 class Players:
@@ -306,12 +338,34 @@ tournament1.rounds.append(round1)
 #chaque paire permettra de créer un match
 #chaque match sera ajouté à round1.matches qui est une liste
 
-print("Swiss algortihem return :" + str (tournament1.SwissAlgorithm_applied_to_the_tournament()))
+#Generation des paires
+#print("Swiss algortihem return :" + str (tournament1.SwissAlgorithm_applied_to_the_tournament_by_rank_classification()))
+pairs = tournament1.SwissAlgorithm_applied_to_the_tournament_by_rank_classification()
+for pair in pairs:
+    print(pair)
+
+#création d'un match
+
+    match_x_of_round1 = Matches(pair[0],pair[1]) 
+    print("LE MATCH SE DEROULE")
+
+    #Lorsqu'un tour est terminé, le gestionnaire du tournoi saisit les résultats de chaque match avant de générer les paires suivantes
+    #on rentre les scores
+    match_x_of_round1.player_1_score += int(input("score joueur 1"))
+    match_x_of_round1.player_2_score += int(input("score joueur 2"))
+    #match_x_of_round1.match_tuple_representation()
+
+#chaque match est ajouté à round1.matches qui est une liste
+    round1.matches.append(match_x_of_round1.match_tuple_representation())
 
 
-#Lorsqu'un tour est terminé, le gestionnaire du tournoi saisit les résultats de chaque match avant de générer les paires suivantes
+#3.	Au prochain tour, triez tous les joueurs en fonction de leur nombre total de points (perso:classement/rang semble 
+# independent du tournois alors que nombre de points est relatif au joueur au sein du tournois). Si plusieurs joueurs 
+# ont le même nombre de points, triez-les en fonction de leur rang.
 
-#créer un tour, ajouter les joueurs ;
-#voir comment les joueurs sont associés (classements) ;
-#gagner/perdre des matchs de manière aléatoire ;
-#vérifier que les données des modèles sont correctement mises à jour.
+#comment accéder à un score donné ?
+
+
+pairs = tournament1.SwissAlgorithm_applied_to_the_tournament_by_score_classification(round1.matches)
+
+
