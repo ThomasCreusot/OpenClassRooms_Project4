@@ -9,20 +9,24 @@ Note : ne devrait pas contenir la «logique» du jeu
 -Commencer par les modèles : avec quelles entités votre programme va-t-il fonctionner ? 
 -Doivent-elles contenir des données (= attributs) ? 
 -Appliquent-elles des comportements spécifiques (= méthodes) ?
-
 """
+
+# Use of sorted() :
+# https://docs.python.org/fr/3/library/functions.html#sorted
+# https://docs.python.org/fr/3/howto/sorting.html#sortinghowto 
+
 
 
 class Tournament:
     """Represents a tournament"""
 
-    TOURNAMENTS = [] # Attribut de classe qui contiendra la liste de tous les tournois
+    TOURNAMENTS = [] # Class attribut, will contains the list of all tournaments 
 
-    # Possibilité de renseigner les joueurs lors de la création du tournois de la manière suivante : 
-    # tournois1 = Tournament(..., players = ["joueur1, joueur2, ..."]) ; on pourra également utiliser 
-    # tournois.players.append(joueur1)
+    # def __ini__(..., player = []) --> Not correct (variable at the scale of the class) 
+    # def __ini__(..., player = None) --> Correct 
+    # def __ini__(..., ) --> Correct 
     def __init__(self, name, localisation, date_of_beginning, date_of_ending, time_controler, description, 
-                number_of_rounds = "4", players=[]) : # renseigner players de la manière suivante : tournois=Tournament(...., players = ["joueur1, joueur2, ..."])
+                number_of_rounds = "4") :
         self.name = name
         self.localisation = localisation
         self.date_of_beginning = date_of_beginning
@@ -31,7 +35,7 @@ class Tournament:
         self.description = description
         self.number_of_rounds = number_of_rounds
         self.rounds = []
-        self.players = players
+        self.players = []
 
 
     @classmethod
@@ -44,7 +48,7 @@ class Tournament:
     @classmethod 
     def listing_all_tournaments(cls):
         """Returns the list containing all tournaments in TOURNAMENTS"""
-        
+
         return Tournament.TOURNAMENTS
         #VIEWS : print(Tournament.listing_all_tournaments())
 
@@ -52,22 +56,24 @@ class Tournament:
     def tournament_players_listing_alphabectic_order(self):
         """Returns the list containing all players of a tournament, by alphabetic order"""
 
-        all_players_of_tournament_sorted_by_family_name = sorted(self.players, key=lambda x: x.family_name, reverse=False)
+        all_players_of_tournament_sorted_by_family_name = \
+            sorted(self.players, key=lambda x: x.family_name, reverse=False)
+        
         return all_players_of_tournament_sorted_by_family_name
         #VIEWS : print(Tournament.tournament_players_listing_alphabectic_order())
 
 
-    def tournament_players_listing_by_ronk_order(self):
+    def tournament_players_listing_by_rank_order(self):
         """Returns the list containing all players of a tournament, by rank order"""
 
         all_players_of_tournament_sorted_by_rank = sorted(self.players, key=lambda x: x.rank, reverse=False)
         return all_players_of_tournament_sorted_by_rank
-        #VIEWS : print(Tournament.tournament_players_listing_by_ronk_order())
+        #VIEWS : print(Tournament.tournament_players_listing_by_rank_order())
 
 
     def tournament_rounds_listing(self):
         """Returns the list containing all rounds of a tournament"""
-        
+
         return self.rounds
         #VIEWS : print(tournamentX.tournament_rounds_listing())
 
@@ -75,36 +81,39 @@ class Tournament:
     def tournament_matches_listing(self):
         """Returns the list containing all matches of a tournament"""
 
-        #il faut aller chercher tous les matches d'un round, à faire une fois que j'ai fini la classe Round
-        # essayer return self.rounds.matches
+        # A FAIRE il faut aller chercher tous les matches d'un round, à faire une fois que j'ai fini la classe Round
+        # essayer return self.rounds.matches ou alors, for round in self.rounds ... avec un apped sur une liste qui sera
+        # le return de la fontion
         pass
 
 
-    def SwissAlgorithm_applied_to_the_tournament_by_rank_classification(self): #serait interessant de definir cette méthode à l'echelle du round, les deux sont possibles, jepars sur l'echelle tournament
+    def SwissAlgorithm_applied_to_the_tournament_by_rank_classification(self): 
+        # Note : At the tournament scale, because it is applied to player of a tournament.
         """Returns pairs of players of a tournament; for matches of a round, based on their classification (rank)"""
 
         # 1. Au début du premier tour, triez tous les joueurs en fonction de leur classement
-        #https://docs.python.org/fr/3/library/functions.html#sorted
-        #https://docs.python.org/fr/3/howto/sorting.html#sortinghowto 
         all_players_of_tournament_sorted_by_ranks = sorted(self.players, key=lambda x: x.rank, reverse=False)
-        #TEST_OK for player in players_sorted_by_ranks:
-        #TEST_OK    print(player.rank)
+        #TEST_OK: for player in players_sorted_by_ranks:
+        #TEST_OK:    print(player.rank)
 
-        # 2. Divisez les joueurs en deux moitiés, une supérieure et une inférieure.
-        #Note : j'utilise int() et pas "round" car on devrait avoir un nombre pair de joueurs
-        higher_half_of_players_sorted_by_ranks = all_players_of_tournament_sorted_by_ranks[0:int(len(all_players_of_tournament_sorted_by_ranks)/2)] #0:4 --> 0,1,2,3
-        lower_half_of_players_sorted_by_ranks = all_players_of_tournament_sorted_by_ranks[int(len(all_players_of_tournament_sorted_by_ranks)/2):int(len(all_players_of_tournament_sorted_by_ranks))] #4:8 --> 4,5,6,7
+        # Verification qu'on a un nombre impair de joueurs
+        if (len(all_players_of_tournament_sorted_by_ranks)) % 2 == 0 : 
 
+            # 2. Divisez les joueurs en deux moitiés, une supérieure et une inférieure.
+            #Note : Use int() and not "round" because there is not an even number of players
+            higher_half_of_players_sorted_by_ranks = all_players_of_tournament_sorted_by_ranks[\
+                0:int(len(all_players_of_tournament_sorted_by_ranks)/2)] # 0:4 --> 0,1,2,3
+            lower_half_of_players_sorted_by_ranks = all_players_of_tournament_sorted_by_ranks[\
+                int(len(all_players_of_tournament_sorted_by_ranks)/2):\
+                    int(len(all_players_of_tournament_sorted_by_ranks))] # 4:8 --> 4,5,6,7
 
-        # 2(suite) : Le meilleur joueur de la moitié supérieure est jumelé avec le meilleur joueur de la moitié 
-        # inférieure, et ainsi de suite. 
-        
-        #verification qu'on a deux listes de meme longueur
-        if (len(higher_half_of_players_sorted_by_ranks)) == (len(lower_half_of_players_sorted_by_ranks)): 
-            #Pairs: variable dans laquelle on va stocker les paires de joueurs qui vont s'affronter
+            # 2(suite) : Le meilleur joueur de la moitié supérieure est jumelé avec le meilleur joueur de la moitié 
+            # inférieure, et ainsi de suite. 
+
+            # Pairs: variable dans laquelle on va stocker les paires de joueurs qui vont s'affronter
             pairs = []
-            for x in range(0,(len(higher_half_of_players_sorted_by_ranks))):
-                pair = (higher_half_of_players_sorted_by_ranks[x], lower_half_of_players_sorted_by_ranks[x])
+            for i in range(0,(len(higher_half_of_players_sorted_by_ranks))):
+                pair = (higher_half_of_players_sorted_by_ranks[i], lower_half_of_players_sorted_by_ranks[i])
                 pairs.append(pair)
             #TEST_OK print("Pairs, established from rank of players " + str(pairs))
 
@@ -113,138 +122,180 @@ class Tournament:
 
         return pairs
 
-        #3.	Au prochain tour, triez tous les joueurs en fonction de leur nombre total de points (perso:classement/rang 
-        # semble independent du tournois alors que nombre de points est relatif au joueur au sein du tournois). Si 
-        # plusieurs joueurs ont le même nombre de points, triez-les en fonction de leur rang.
+        #3.	Au prochain tour, triez tous les joueurs en fonction de leur nombre total de points  : 
+        # nombre de points est relatif au joueur au sein du tournois). # Si plusieurs joueurs ont le même nombre de 
+        # points, triez-les en fonction de leur rang.
         #--> nouvelle fonction
 
 
     def SwissAlgorithm_applied_to_the_tournament_by_score_classification(self): 
         """Returns pairs of players of a tournament for matches of a round, based on their number of points"""
 
-        #Pour chaque joueur, on cherche la somme de ces points:
-        #Etapes: pour chaque joueur du tournois, parcourir tous les rounds du tournois et tous les matchs de chaque round; chercher les points acquis par le joueur (somme), établir une nouvelle liste et la trier
-        for player in self.players:
+        print()
+        print("=================== SWISS ALGORITHM : BY SCORE ===================")
 
+        #Pour chaque joueur, on cherche la somme de ces points accumulés pendant le round :
+        # Etapes : 
+        # 1. Pour chaque joueur du tournois, parcourir tous les rounds du tournois et tous les matchs de chaque round; 
+        # 2. Chercher les points acquis par le joueur et  en faire la somme ; 
+        # 3. Etablir une nouvelle liste et la trier
+
+        #Etapes 1 et 2
+        for player in self.players:
             #Reinitialisation of the player score at the round scale
             player.player_score_at_round_scale = 0
+            #TESTOK: print("Recherche des points du joueur", player)
 
-            print()
-            print("Recherche des points du joueur", player)
-            
-            #On parcourt donc tous les rounds qui ont eu lieu
+            #On parcourt tous les rounds qui ont eu lieu
             for round in self.rounds:
-                print()
-                print()
-                print("Recherche des points dans le round", round.name)
+                #TESTOK: print("Recherche des points dans le round", round.name)
 
-                print("re")
-                for match in round.matches_tuples_representations: #pb à resoudre ici : il sort tous les matchs de tous les rounds alors qu'on veut juste les matchs du round en question
-                    print("Recherche des points dans les tous les matchs du round", match)
-                    
-                    #print("match: ", match) #sous la forme ([instanceJoueurA, scoreJoueurA],[instanceJoueurB, scoreJoueurB])
+                #On parcourt tous les matches du round
+                for match in round.matches_tuples_representations: 
+                    #TESTOK: print("Recherche des points dans les tous les matchs du round", match)
+                    #TESTOK : print("match: ", match) #sous la forme ([instanceJoueurA, scoreJoueurA],[instanceJoueurB, 
+                    # scoreJoueurB])
+
                     for player_and_its_score in match:
-                        #print("player_and_its_score", player_and_its_score) # sous la forme [instanceJoueurA, scoreJoueurA]
+                        #TESTOK: print("player_and_its_score", player_and_its_score) # sous la forme [instanceJoueurA, 
+                        # scoreJoueurA]
+
+                        #Si le joueur est bien celui qui nous interesse dans la boucle actuelle
                         if player == player_and_its_score[0]:
-                            print(player_and_its_score[0].family_name, "got the score", player_and_its_score[1], "during the match", match)
+                            print(player_and_its_score[0].family_name, "got the score", player_and_its_score[1], \
+                                "during the match", match)
+
                             player.player_score_at_round_scale += player_and_its_score[1]
-                            print(player.player_score_at_round_scale)
-        all_players_of_tournament_sorted_by_score_at_round_scale = sorted(self.players, key=lambda x: x.player_score_at_round_scale, reverse=True) #Ordre decroissant pour avoir le meilleur score en premier
-        print("list of players from the higher number of points to the lower one: ", all_players_of_tournament_sorted_by_score_at_round_scale)
-        #TEST_OK for playerr in all_players_of_tournament_sorted_by_score_at_round_scale:
+                            #TESTOK: print(player.player_score_at_round_scale)
+
+        #Etape 3
+        all_players_of_tournament_sorted_by_score_at_round_scale = sorted(self.players, key=lambda x: \
+            x.player_score_at_round_scale, reverse=True) #Ordre decroissant pour avoir le meilleur score en premier
+
+
+        # ce qu'il manque ici : le fait de trier les joueurs en fonction de leur rank, si ils ont le meme score
+        # https://docs.python.org/fr/3/howto/sorting.html#sortinghowto
+        # [...] Cette propriété fantastique vous permet de construire des tris complexes dans des tris en plusieurs étapes. 
+        # Par exemple, afin de sortir les données des étudiants en ordre descendant par grade puis en ordre ascendant 
+        # par age, effectuez un tri par age en premier puis un second tri par grade : [...]
+
+        # On re-trie avec le rank; mais comme on n'assigne pas une nouvelle variable, la liste conserve le premier tri, 
+        # fait avec le score
+        sorted(all_players_of_tournament_sorted_by_score_at_round_scale, key=lambda x: x.rank, reverse=True)
+        #Ne marche pas si on attribue une nouvelle variable
+        # all_players_of_tournament_sorted_by_score_and_rank_at_round_scale = sorted(all_players_of_tournament_sorted_by_score_at_round_scale, key=lambda x: x.rank, reverse=True)
+
+        #TESTOK: 
+        for playerr in all_players_of_tournament_sorted_by_score_at_round_scale:
+            print("test 20220617", playerr.player_score_at_round_scale, playerr.rank)
+
+
+        print("list of players from the higher number of points to the lower one: ", \
+            all_players_of_tournament_sorted_by_score_at_round_scale)
+        #TEST_OK: for playerr in all_players_of_tournament_sorted_by_score_at_round_scale:
             #print(playerr.player_score_at_round_scale)
 
-        #verification qu'on a un nombre impair de joueurs
+        # Verification qu'on a un nombre impair de joueurs
         if (len(all_players_of_tournament_sorted_by_score_at_round_scale)) % 2 == 0 : 
-            #Pairs: variable dans laquelle on va stocker les paires de joueurs qui vont s'affronter
+            # Pairs: variable dans laquelle on va stocker les paires de joueurs qui vont s'affronter
             pairs = []
             
-            #on parcourt la liste de 2 en deux : index 0 associé à 1, 2 associé à 3 et ainsi de suite
-            for x in range(0,len(all_players_of_tournament_sorted_by_score_at_round_scale), 2):
-                pair = (all_players_of_tournament_sorted_by_score_at_round_scale[x], all_players_of_tournament_sorted_by_score_at_round_scale[x+1])
+            # On parcourt la liste de deux en deux : index 0 associé à 1, 2 associé à 3 et ainsi de suite
+
+
+
+
+            # Création des paires
+            for x in range(0,int(len(all_players_of_tournament_sorted_by_score_at_round_scale)/2)):
+                print("x", x)
+                i = 0
+                j = i + 1
+                adversary_has_been_found = False
+                while adversary_has_been_found == False :
+                    print("recherche d'adversaire contre le joueur à la position {0} de la liste".format(i))
+                    print("est ce que le joueur à la position {0} de la liste fera l'affaire ? ".format(j))
+                    #paire potentielle
+                    pair = (all_players_of_tournament_sorted_by_score_at_round_scale[i], \
+                        all_players_of_tournament_sorted_by_score_at_round_scale[j])
+
+                    #Vérification si les deux joueurs ont déja joué l'un contre l'autre
+                    for round in self.rounds:
+                        matches = round.matches_tuples_representations
+                        for match in matches:
+                            couple_of_player_already_played_together = (match[0][0], match[1][0])
+                            #TESTOK: print(couple_of_player_already_played_together)
+
+                            if pair == couple_of_player_already_played_together:
+                                print("ALREADY PLAYED:", couple_of_player_already_played_together[0].family_name, couple_of_player_already_played_together[1].family_name)
+                                adversary_has_been_found == False
+                                j+=1
+
+                                # Signalement avec print : OK
+                                # Pour modifier l'algorithme, en revanche...
+                                # récursivité en créant une fonction dédiée ?
+                                # Note : 4 rounds, 8 joueurs; donc un joueur n'aura pas joué contre tous les autres joueurs.
+                                # il faut arriver à sortir les joueurs de la liste une fois qu'ils sont dans une paire : méthode pop(); non car on est sur une paire potentielle, pas avérée
+                                # utiliser une valeur j initialement = à i+1; et qui += à chaque fin de boucle (une nouvelle boucle créée à l'échelle  j)
+
+                            else :
+                                print("-->les joueurs ne se sont pas afrontés, la paire va etre créée ")
+                                print()
+                                adversary_has_been_found == True
+                                #on sort les joueurs de la liste pour ne pas qu'ils soient assignés à deux matches
+                                break
+                                #REPRENDRE ICI : le probleme c'est que la liste a été vidée; pourtant je pensais que ça allait avec le adversary_has_been_found == True et le break
+                                #explication : il le fait pour chaque round et chaque match
+                                #il faut donc mettre la boucle while dans la boucle for round et for math ?
+                                #il faut donc faire attention à l'indentation 
+                    all_players_of_tournament_sorted_by_score_at_round_scale.remove(pair[0])
+                    all_players_of_tournament_sorted_by_score_at_round_scale.remove(pair[1])
+                    print(all_players_of_tournament_sorted_by_score_at_round_scale)
+                    #Toujours pas...
+
+                """SAUVEGARDE DU CODE FONCTIONNELLE AVANT DE METTRE LA BOUCLE J
+                            # Création des paires
+                            for i in range(0,len(all_players_of_tournament_sorted_by_score_at_round_scale), 2):
+                                print("recherche d'adversaire contre le joueur à la position {0} de la liste".format(i))
+                                #paire potentielle
+                                pair = (all_players_of_tournament_sorted_by_score_at_round_scale[i], \
+                                    all_players_of_tournament_sorted_by_score_at_round_scale[i+1])
+
+                                #Vérification si les deux joueurs ont déja joué l'un contre l'autre
+                                for round in self.rounds:
+                                    matches = round.matches_tuples_representations
+                                    for match in matches:
+                                        couple_of_player_already_played_together = (match[0][0], match[1][0])
+                                        print(couple_of_player_already_played_together)
+
+                                        if pair == couple_of_player_already_played_together:
+                                            print("ALREADY PLAYED:", couple_of_player_already_played_together[0].family_name, couple_of_player_already_played_together[1].family_name)
+
+                                            # Signalement avec print : OK
+                                            # Pour modifier l'algorithme, en revanche...
+                                            # récursivité en créant une fonction dédiée ?
+                                            # Note : 4 rounds, 8 joueurs; donc un joueur n'aura pas joué contre tous les autres joueurs.
+                                            # il faut arriver à sortir les joueurs de la liste une fois qu'ils sont dans une paire : méthode pop()
+                                            # utiliser une valeur j initialement = à i+1; et qui += à chaque fin de boucle (une nouvelle boucle créée à l'échelle  j)
+                """
+
                 pairs.append(pair)
 
         else:
             print("Even number of players")
 
-        #TEST-OK
-        for pair in pairs:
-            print()
-            print("Chaque joueur et son score cumulé a l'echelle du round")
-            print(pair[0].family_name," ", pair[0].player_score_at_round_scale)
-            print(pair[1].family_name," ", pair[1].player_score_at_round_scale)
+        #TESTOK:
+        #for pair in pairs:
+        #    print("Chaque joueur et son score cumulé a l'echelle du round")
+        #    print(pair[0].family_name," ", pair[0].player_score_at_round_scale)
+        #    print(pair[1].family_name," ", pair[1].player_score_at_round_scale)
 
         return pairs
-
-
-
-
-
-
-""" PREMIRE TENTATIVE
-    def SwissAlgorithm_applied_to_the_tournament_by_score_classification(self, previous_matches_tuple_representation): #A REFAIRE, les points sont à l'echelle du match mais le total des points est à l'echelle du TOUR
-        #Returns pairs of players of a tournament for matches of a round, based on their number of points
-        #print(previous_matches_tuple_representation)
-        #j'ai des tuples (4 maximum, si j'ai 8 joueurs)
-        #chaque tuple contient une liste : un joueur et son score, c'est ça qui m'interesse : les récupérer et les mettre dans une meme liste: ma liste de joueurs avec leur score pour le prochain round
-        
-        list_of_players_and_their_score_for_the_next_round = []
-
-        for previous_match_tuple_representation in previous_matches_tuple_representation:
-            #print("_________")
-            #print(previous_match_tuple_representation)
-            for player_and_its_score in previous_match_tuple_representation:
-                list_of_players_and_their_score_for_the_next_round.append(player_and_its_score) #print(list_of_players_and_their_score_for_the_next_round) : ok
-
-        #Reverse : Plus un joueur a un score élevé, meilleur il est, donc classification reverse        
-        list_of_players_and_their_score_for_the_next_round_classified_by_point = sorted(list_of_players_and_their_score_for_the_next_round, key=lambda x: x[1], reverse=True) #x[1] : le score; x[0] : l'instance du joueur
-        print(list_of_players_and_their_score_for_the_next_round_classified_by_point) #résultat ok
-
-        #Si plusieurs joueurs ont le même nombre de points, triez-les en fonction de leur rang.
-        for i in range(len(list_of_players_and_their_score_for_the_next_round_classified_by_point)-1):
-            if list_of_players_and_their_score_for_the_next_round_classified_by_point[i][1] == list_of_players_and_their_score_for_the_next_round_classified_by_point[i+1][1]: #[i][1]: le score (champ[1]) du joueur à l'index i [i]
-                print("deux joueurs ont le même score") #REPRENDRE ICI : il faut trier list_of_players_and_their_score_for_the_next_round_classified_by_point[i][1] et list_of_players_and_their_score_for_the_next_round_classified_by_point[i+1][1] selon leur rank (déja fait dans une autre méthode, la difficulté sera de ne pas toucher au reste de la liste je pense)
-                if list_of_players_and_their_score_for_the_next_round_classified_by_point[i][0].rank > list_of_players_and_their_score_for_the_next_round_classified_by_point[i+1][0].rank: #comparaison du rank des instances (instance = [0])
-                    #je pars du principe qu'un rank plus élevé mathématiquement représente un niveau moins bon; donc si le rank du premier joueur [i] est plus grand, il doit etre placé après l'autre joueur [i+1]
-                    list_of_players_and_their_score_for_the_next_round_classified_by_point[i], list_of_players_and_their_score_for_the_next_round_classified_by_point[i+1]=list_of_players_and_their_score_for_the_next_round_classified_by_point[i+1], list_of_players_and_their_score_for_the_next_round_classified_by_point[i]
-                elif list_of_players_and_their_score_for_the_next_round_classified_by_point[i][0].rank < list_of_players_and_their_score_for_the_next_round_classified_by_point[i+1][0].rank:
-                    pass #les joueurs sont dans le bon ordre
-                else:
-                    print("problem, two players have the same rank (and the same score)")
-
-        print()
-        print("list_of_players_and_their_score_for_the_next_round_classified_by_point" +str (list_of_players_and_their_score_for_the_next_round_classified_by_point)) 
-
-
-        #4.	Associez le joueur 1 avec le joueur 2, le joueur 3 avec le joueur 4, et ainsi de suite. 
-
-        if (len(list_of_players_and_their_score_for_the_next_round_classified_by_point))%2 == 0 : #verification qu'on a un nombre pair de joueurs
-            #Pairs: variable dans laquelle on va stocker les paires
-            pairs = []
-            #On parcours la liste avec un 'step' de 2, et on associe une instance de la liste à l'instance suivante donc 0et1, 2et3, 4et5 
-            for x in range(0,int(len(list_of_players_and_their_score_for_the_next_round_classified_by_point)), 2):
-                print(x)
-                pair = [list_of_players_and_their_score_for_the_next_round_classified_by_point[x][0], list_of_players_and_their_score_for_the_next_round_classified_by_point[x+1][0]] #[0] : instance de joueur, si on ne le met pas, ca prend l'instance et le score du round precedent
-                pairs.append(pair)
-            #print("pairs, established from rank of players " + str(pairs))
-
-        else:
-            print("Even number of players")
-
-        return pairs
-
-        # Si le joueur 1 a déjà joué contre le joueur 2, associez-le plutôt au joueur 3.
-        #A FAIRE : pour associer j1 et J2, et ainsi de suite, ok, mais reflexion en cours sur : comment éviter de renouveler un match déja fait ^^
-        #parmi les matchs existants --> for match in round (il le faudra en argument de la méthode)
-        #si list_of_players_and_their_score_for_the_next_round_classified_by_point[0][0] (instance de joueur = le joueur1 dans la présente classification) ; list_of_players_and_their_score_for_the_next_round_classified_by_point[1][0]
-
-"""
 
 
 class Rounds:
     """Represents a round"""
 
-    def __init__(self, name, date_and_time_beginning, date_and_time_ending) : #INTERESSANT ! si je mets 'matches_tuples_representations = []' dans les parametres, j'avais une liste déja remplie avec les résultats du premier round des que je créais le second : WHAT ! ? demander explication à Samuel, et revoir les autres classes :)
+    def __init__(self, name, date_and_time_beginning, date_and_time_ending) : 
         self.name = name
         self.date_and_time_beginning = date_and_time_beginning
         self.date_and_time_ending = date_and_time_ending
@@ -255,7 +306,7 @@ class Rounds:
 class Matches:
     """Represent a match"""
 
-    def __init__(self, player_1_instance, player_2_instance, player_1_score=0, player_2_score =0) : #je mets des scores par défaut de 0, on modifiera à la fin du match
+    def __init__(self, player_1_instance, player_2_instance, player_1_score=0, player_2_score =0) : 
         self.player_1_instance = player_1_instance
         self.player_2_instance = player_2_instance
         self.player_1_score = player_1_score
@@ -263,18 +314,17 @@ class Matches:
 
 
     def match_tuple_representation(self):
-        self.match_tuple_representation = ([self.player_1_instance, self.player_1_score], [self.player_2_instance, self.player_2_score])
+        self.match_tuple_representation = ([self.player_1_instance, self.player_1_score], \
+            [self.player_2_instance, self.player_2_score])
 
-        print("Match tuple representation", self.match_tuple_representation)
+        #TESTOK: print("Match tuple representation", self.match_tuple_representation)
         return self.match_tuple_representation
 
 
 class Players:
     """Represents a player"""
 
-    PLAYERS = [] # Attribut de classe Note : "Un attribut de classe est une variable dont le champ d'action s'étend 
-    # à l'ensemble d'une classe. Ils sont très utilisés pour compter le nombre d'instances d'une classe par exemple" 
-    # source: Cours OC
+    PLAYERS = [] # Class attribut, will contains the list of all players
 
 
     def __init__(self, family_name, first_name, birth_date, gender, rank) :
@@ -311,15 +361,6 @@ class Players:
 
 
 def mainTestingModel():
-    #TESTS
-    """Creation de 8 joueurs (instances de la classe Players)
-    for i in range(1,9):
-        i = str(i)
-        player = Players("family_name"+i, "first_name"+i, "birth_date"+i, "gender"+i, "rank"+i)
-
-        #Ajout de chaque joueur créé (instances de classe) à l'attribut de classe PLAYERS qui est la liste contenant tous les joueurs
-        Players.add_player_to_PLAYERS_list(player)
-    """
 
     #creation 8 joueurs
     player1 = Players("family_name_1", "first_name_1", "birth_date_1", "gender_1", "rank_1")
@@ -331,7 +372,8 @@ def mainTestingModel():
     player7 = Players("family_name_7", "first_name_7", "birth_date_7", "gender_7", "rank_7")
     player8 = Players("family_name_8", "first_name_8", "birth_date_8", "gender_8", "rank_8")
 
-    #Ajout de chaque joueur créé (instances de classe) à l'attribut de classe PLAYERS qui est la liste contenant tous les joueurs
+    #Ajout de chaque joueur créé (instances de classe) à l'attribut de classe PLAYERS qui est la liste contenant tous 
+    # les joueurs
     Players.add_player_to_PLAYERS_list(player1)
     Players.add_player_to_PLAYERS_list(player2)
     Players.add_player_to_PLAYERS_list(player3)
@@ -351,7 +393,7 @@ def mainTestingModel():
 
 
     #Creation d'un tournoi
-    tournament1 = Tournament("LeTournoirDesTroisSorciers", "Toulouse", "début", "fin", "blitz", "description blablabla")
+    tournament1 = Tournament("LeTournoirDesTroisSorciers", "Toulouse", "début", "fin", "blitz", "description blabla")
     #Ajout du tournoi à la liste des tournois
     Tournament.add_tournament_to_TOURNAMENTS_list(tournament1)
     #Print de la liste des tournois
@@ -369,63 +411,53 @@ def mainTestingModel():
     tournament1.players.append(player8)
 
     print()
-    print("Liste des joueurs du tournois tournament 1" + str (tournament1.players))
-    print()
-    print("Nom du premier joueur du tournois tournament 1" + str (tournament1.players[0].family_name))
-
-
+    print("Liste des joueurs du tournois tournament 1", tournament1.players)
 
     #Creation d'un tour
     round1 = Rounds("round_1", "date_begin_round_1","date_ending_round_1")
 
-    #Ajouter les joueurs: perso, les consignes disent d'ajouter les joueurs à un tournoi, puis les round sont créés
+    #Ajouter les joueurs: les consignes disent d'ajouter les joueurs à un tournoi, puis les round sont créés
     #'l'ordinateur génère des paires de joueurs pour les matches du premier tour"
-    #les joueurs du tour sont donc... les joueurs du tournois : P ajouté aux questions 
+    #les joueurs du tour sont donc... les joueurs du tournois 
 
     #ajout du round au tournois
     tournament1.rounds.append(round1)
 
-    #L'ordinateur génère des paires de joueurs pour le premier tour.
-    #donc on doit utiliser l'algorithme suisse ici, sur les 8 joueurs du tournois, on doit obtenir 4 paires de joueurs
-    #chaque paire permettra de créer un match
-    #chaque match sera ajouté à round1.matches qui est une liste
-
     #Generation des paires
-    #print("Swiss algortihem return :" + str (tournament1.SwissAlgorithm_applied_to_the_tournament_by_rank_classification()))
+    #TESTOK: print("Swiss algorithm returns :", tournament1.SwissAlgorithm_applied_to_the_tournament_by_rank_classification())
     pairs = tournament1.SwissAlgorithm_applied_to_the_tournament_by_rank_classification()
     for pair in pairs:
         print()
-        print("Pair générée pour le prochain match, composée de deux instances de Player: ", pair)
+        print("Pair générée pour le prochain match, composée de deux instances de joueurs, ayant comme family_name: \
+            {0} et {1} ".format(pair[0].family_name, pair[1].family_name))
 
     #création d'un match
         match_x_of_round1 = Matches(pair[0],pair[1]) 
         print("LE MATCH SE DEROULE")
 
-        #Lorsqu'un tour est terminé, le gestionnaire du tournoi saisit les résultats de chaque match avant de générer les paires suivantes
-        #on rentre les scores
-        match_x_of_round1.player_1_score += int(input("score joueur 1"))
-        match_x_of_round1.player_2_score += int(input("score joueur 2"))
-        #match_x_of_round1.match_tuple_representation()
+        #Lorsqu'un tour est terminé, le gestionnaire du tournoi saisit les résultats de chaque match avant de générer 
+        # les paires suivantes
+        print("Dear tournament manager, please enter the scores of the match")
+        match_x_of_round1.player_1_score += int(input("score joueur 1 ({0}): ".format(pair[0].family_name)))
+        match_x_of_round1.player_2_score += int(input("score joueur 2 ({0}): ".format(pair[1].family_name)))
+        #TESTOK: match_x_of_round1.match_tuple_representation()
 
-    #chaque match est ajouté à round1.match_tuple_representations qui est une liste
+        #chaque match est ajouté à round1.match_tuple_representations qui est une liste
         round1.matches_tuples_representations.append(match_x_of_round1.match_tuple_representation())
 
 
-    #3.	Au prochain tour, triez tous les joueurs en fonction de leur nombre total de points (perso:classement/rang semble 
-    # independent du tournois alors que nombre de points est relatif au joueur au sein du tournois). Si plusieurs joueurs 
-    # ont le même nombre de points, triez-les en fonction de leur rang.
-
-
+    #3.Au prochain tour, triez tous les joueurs en fonction de leur nombre total de points. Si plusieurs joueurs ont le
+    # même nombre de points, triez-les en fonction de leur rang.
     pairs = tournament1.SwissAlgorithm_applied_to_the_tournament_by_score_classification()
 
     round2 = Rounds("round_2", "date_begin_round_2","date_ending_round_2")
-    print("TEST !!!!!!!! ", round2.matches_tuples_representations) #devrait etre vide ici
 
     tournament1.rounds.append(round2)
 
     for pair in pairs:
         print()
-        print("Pair générée pour le prochain match, composée de deux instances de Player: ", pair)
+        print("Pair générée pour le prochain match, composée de deux instances de joueurs, ayant comme family_name: \
+            {0} et {1} ".format(pair[0].family_name, pair[1].family_name))
 
     #création d'un match
         match_x_of_round2 = Matches(pair[0],pair[1]) 
@@ -433,8 +465,9 @@ def mainTestingModel():
 
         #Lorsqu'un tour est terminé, le gestionnaire du tournoi saisit les résultats de chaque match avant de générer les paires suivantes
         #on rentre les scores
-        match_x_of_round2.player_1_score += int(input("score joueur 1"))
-        match_x_of_round2.player_2_score += int(input("score joueur 2"))
+        print("Dear tournament manager, please enter the scores of the match")
+        match_x_of_round2.player_1_score += int(input("score joueur 1 ({0}): ".format(pair[0].family_name)))
+        match_x_of_round2.player_2_score += int(input("score joueur 2 ({0}): ".format(pair[1].family_name)))
         #match_x_of_round1.match_tuple_representation()
 
     #chaque match est ajouté à round1.match_tuple_representations qui est une liste
@@ -446,45 +479,5 @@ def mainTestingModel():
     pairs = tournament1.SwissAlgorithm_applied_to_the_tournament_by_score_classification()
 
 
-"""
-    pairs = tournament1.SwissAlgorithm_applied_to_the_tournament_by_score_classification(round1.match_tuple_representations)
-
-    print(pairs)
-
-    #On a les paires pour le round2; 
-
-    round2 = Rounds("round_2", "date_begin_round_2","date_ending_round_2")
-    tournament1.rounds.append(round2)
-
-    for pair in pairs:
-
-    #création d'un match
-        match_x_of_round2 = Matches(pair[0],pair[1]) 
-        print("LE MATCH SE DEROULE")
-
-        #Lorsqu'un tour est terminé, le gestionnaire du tournoi saisit les résultats de chaque match avant de générer les paires suivantes
-        #on rentre les scores
-        match_x_of_round2.player_1_score += int(input("score joueur 1"))
-        match_x_of_round2.player_2_score += int(input("score joueur 2"))
-        #match_x_of_round1.match_tuple_representation()
-
-        #chaque match est ajouté à round1.matches qui est une liste
-        round2.match_tuple_representations.append(match_x_of_round2.match_tuple_representation())
-
-    pairs = tournament1.SwissAlgorithm_applied_to_the_tournament_by_score_classification(round2.match_tuple_representations) #le pb c'est qu'il ne faut pas générer les paires sur la base des matches du round2 mais sur la base de la somme des points des joueurs
-
-    print(pairs)
-
-
-
-    #On a les paires pour le round3 ?
-
-#modifications à faire : si on a deux joueurs aui ont le meme score: bug; mais avant cela: on se retrouve avec trop de joueurs : ils sont dédoublés comme s'ils avaient deux scores
-#c'est parceque le score est enregistré à l'echelle du match 
-#il faut la garder à l'échelle du match, c'est demandé pour 'représenter le match' en console il me semble
-#mais du coup il faut aussi le faire remonter à l'echelle du round.
-#reprendre ici
-
-"""
 
 mainTestingModel()
