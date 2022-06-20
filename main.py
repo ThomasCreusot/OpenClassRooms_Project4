@@ -204,6 +204,17 @@ class Tournament:
 
 
 
+            #Vérification si les deux joueurs ont déja joué l'un contre l'autre
+            # Liste des joueurs déja affrontés déja joués
+            couple_of_player_already_played_together_list = []
+            for round in self.rounds:
+                matches = round.matches_tuples_representations
+                for match in matches:
+                    couple_of_player_already_played_together = (match[0][0], match[1][0])
+                    couple_of_player_already_played_together_list.append(couple_of_player_already_played_together)
+                    couple_of_player_already_played_together_reversed = (match[1][0], match[0][0])
+                    couple_of_player_already_played_together_list.append(couple_of_player_already_played_together_reversed)                    
+
 
             # Création des paires
             for x in range(0,int(len(all_players_of_tournament_sorted_by_score_at_round_scale)/2)):
@@ -215,42 +226,42 @@ class Tournament:
                     print("recherche d'adversaire contre le joueur à la position {0} de la liste".format(i))
                     print("est ce que le joueur à la position {0} de la liste fera l'affaire ? ".format(j))
                     #paire potentielle
-                    pair = (all_players_of_tournament_sorted_by_score_at_round_scale[i], \
+                    potential_pair = (all_players_of_tournament_sorted_by_score_at_round_scale[i], \
                         all_players_of_tournament_sorted_by_score_at_round_scale[j])
 
-                    #Vérification si les deux joueurs ont déja joué l'un contre l'autre
-                    for round in self.rounds:
-                        matches = round.matches_tuples_representations
-                        for match in matches:
-                            couple_of_player_already_played_together = (match[0][0], match[1][0])
-                            #TESTOK: print(couple_of_player_already_played_together)
 
-                            if pair == couple_of_player_already_played_together:
-                                print("ALREADY PLAYED:", couple_of_player_already_played_together[0].family_name, couple_of_player_already_played_together[1].family_name)
-                                adversary_has_been_found == False
-                                j+=1
+                    if not potential_pair in couple_of_player_already_played_together_list or (len(all_players_of_tournament_sorted_by_score_at_round_scale)) == 2 :
+                        print("-->les joueurs ne se sont pas afrontés (ou il s'agit de la dernière possibilité), la paire {0} - {1} va etre créée ".format(
+                            all_players_of_tournament_sorted_by_score_at_round_scale[i].family_name, 
+                            all_players_of_tournament_sorted_by_score_at_round_scale[j].family_name
+                            )                            
+                        )
+                        adversary_has_been_found == True
+                        #on sort les joueurs de la liste pour ne pas qu'ils soient assignés à deux matches
+                        break
+                        #REPRENDRE ICI : le probleme c'est que la liste a été vidée; pourtant je pensais que ça allait avec le adversary_has_been_found == True et le break
+                        #explication : il le fait pour chaque round et chaque match
+                        #il faut donc mettre la boucle while dans la boucle for round et for math ?
+                        #il faut donc faire attention à l'indentation 
 
-                                # Signalement avec print : OK
-                                # Pour modifier l'algorithme, en revanche...
-                                # récursivité en créant une fonction dédiée ?
-                                # Note : 4 rounds, 8 joueurs; donc un joueur n'aura pas joué contre tous les autres joueurs.
-                                # il faut arriver à sortir les joueurs de la liste une fois qu'ils sont dans une paire : méthode pop(); non car on est sur une paire potentielle, pas avérée
-                                # utiliser une valeur j initialement = à i+1; et qui += à chaque fin de boucle (une nouvelle boucle créée à l'échelle  j)
+                    else :
+                        print("ALREADY PLAYED:", all_players_of_tournament_sorted_by_score_at_round_scale[i].family_name, all_players_of_tournament_sorted_by_score_at_round_scale[j].family_name)
+                        adversary_has_been_found == False
+                        j+=1
 
-                            else :
-                                print("-->les joueurs ne se sont pas afrontés, la paire va etre créée ")
-                                print()
-                                adversary_has_been_found == True
-                                #on sort les joueurs de la liste pour ne pas qu'ils soient assignés à deux matches
-                                break
-                                #REPRENDRE ICI : le probleme c'est que la liste a été vidée; pourtant je pensais que ça allait avec le adversary_has_been_found == True et le break
-                                #explication : il le fait pour chaque round et chaque match
-                                #il faut donc mettre la boucle while dans la boucle for round et for math ?
-                                #il faut donc faire attention à l'indentation 
-                    all_players_of_tournament_sorted_by_score_at_round_scale.remove(pair[0])
-                    all_players_of_tournament_sorted_by_score_at_round_scale.remove(pair[1])
-                    print(all_players_of_tournament_sorted_by_score_at_round_scale)
-                    #Toujours pas...
+                        # Signalement avec print : OK
+                        # Pour modifier l'algorithme, en revanche...
+                        # récursivité en créant une fonction dédiée ?
+                        # Note : 4 rounds, 8 joueurs; donc un joueur n'aura pas joué contre tous les autres joueurs.
+                        # il faut arriver à sortir les joueurs de la liste une fois qu'ils sont dans une paire : méthode pop(); non car on est sur une paire potentielle, pas avérée
+                        # utiliser une valeur j initialement = à i+1; et qui += à chaque fin de boucle (une nouvelle boucle créée à l'échelle  j)
+
+                pair = potential_pair
+                all_players_of_tournament_sorted_by_score_at_round_scale.remove(pair[0])
+                all_players_of_tournament_sorted_by_score_at_round_scale.remove(pair[1])
+                print("il reste dans la liste", all_players_of_tournament_sorted_by_score_at_round_scale)
+                print()
+
 
                 """SAUVEGARDE DU CODE FONCTIONNELLE AVANT DE METTRE LA BOUCLE J
                             # Création des paires
