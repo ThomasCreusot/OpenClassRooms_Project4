@@ -2,6 +2,7 @@
 # https://docs.python.org/fr/3/library/functions.html#sorted
 # https://docs.python.org/fr/3/howto/sorting.html#sortinghowto 
 
+DEFAULT_VALUE_NUMBER_ROUNDS_PER_TOURNAMENT = "4"
 
 class Tournament:
     """Represents a tournament"""
@@ -12,7 +13,7 @@ class Tournament:
     # def __ini__(..., player = None) --> Correct 
     # def __ini__(..., ) --> Correct 
     def __init__(self, name, localisation, date_of_beginning, date_of_ending, time_controler, description, 
-                number_of_rounds = "4") :
+                number_of_rounds = DEFAULT_VALUE_NUMBER_ROUNDS_PER_TOURNAMENT) :
         self.name = name
         self.localisation = localisation
         self.date_of_beginning = date_of_beginning
@@ -67,12 +68,12 @@ class Tournament:
     def tournament_matches_listing(self):
         """Returns the list containing all matches of a tournament"""
 
-        tournament_matches_list = []
+        matches_tuples_representation_list = []
 
         for round in self.rounds:
-            tournament_matches_list.append(round.matches_tuples_representations)
+            matches_tuples_representation_list.append(round.matches_tuples_representations)
 
-        return tournament_matches_list
+        return matches_tuples_representation_list
 
 
     def SwissAlgorithm_applied_to_the_tournament_by_rank_classification(self): 
