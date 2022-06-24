@@ -85,11 +85,19 @@ class Controller:
 
         for tournament in Tournament.TOURNAMENTS:
             if tournament.name == tournament_instance_name:
+                tournament.players.append(player_instance_index)
+            else:
+                pass
+
+        """Avant les bases de données, j'ajoutais toute l'instance du joueur dans la liste tournamentX.players
+        for tournament in Tournament.TOURNAMENTS:
+            if tournament.name == tournament_instance_name:
                 for player in Player.PLAYERS:
                     if player.index == player_instance_index:
                         tournament.players.append(player)
             else:
                 pass
+        """
 
 
     def round_initialization(self):
@@ -113,6 +121,18 @@ class Controller:
     def player_rank_manual_modification(self, tournament):
         """Allows to modify the rank of a player"""
 
+        list_of_tournament_players = self.list_of_tournament_players_objects_from_their_indexes(tournament.players)
+
+        for player in list_of_tournament_players:
+            newrank = self.view.rank_player_information(player)
+
+            if newrank.isdigit() :
+                player.rank = newrank
+
+            else:
+                self.view.wrong_player_rank()
+
+        """ avant modif bdd 24062022
         for player in tournament.players:
             newrank = self.view.rank_player_information(player)
 
@@ -121,6 +141,7 @@ class Controller:
 
             else:
                 self.view.wrong_player_rank()
+        """
 
 
     def player_rank_update(self):
@@ -146,7 +167,9 @@ class Controller:
                 ongoing_tournament = tournament
 
         # Player score reinitialization 
-        for player in ongoing_tournament.players:
+        list_of_tournament_players = self.list_of_tournament_players_objects_from_their_indexes(ongoing_tournament.players)
+        for player in list_of_tournament_players:
+        #for player in ongoing_tournament.players:
             player.player_total_score_at_tournament_scale = 0
 
         # Beginning of the round
@@ -164,9 +187,9 @@ class Controller:
 
             # Pairs creation
             if round_number == 1:
-                pairs = ongoing_tournament.SwissAlgorithm_applied_to_the_tournament_by_rank_classification()
+                pairs = ongoing_tournament.SwissAlgorithm_applied_to_the_tournament_by_rank_classification(list_of_tournament_players)
             elif round_number > 1:
-                pairs = ongoing_tournament.SwissAlgorithm_applied_to_the_tournament_by_score_classification()
+                pairs = ongoing_tournament.SwissAlgorithm_applied_to_the_tournament_by_score_classification(list_of_tournament_players)
             else:
                 pass
 
@@ -188,7 +211,9 @@ class Controller:
                         ongoing_match.player_2_score += ongoing_match_player_2_score
 
                         # Score counter at the tournament scale 
-                        for player in ongoing_tournament.players:
+                        list_of_tournament_players = self.list_of_tournament_players_objects_from_their_indexes(ongoing_tournament.players)
+                        for player in list_of_tournament_players:
+                        #for player in ongoing_tournament.players:
                             if player == pair[0]:
                                 player.player_total_score_at_tournament_scale += ongoing_match_player_1_score
                             if player == pair[1]:
@@ -211,11 +236,13 @@ class Controller:
 
 
         # For proper display
-        higher_player_name_lenght = max(len(player.family_name) for player in ongoing_tournament.players)
+        higher_player_name_lenght = max(len(player.family_name) for player in self.list_of_tournament_players_objects_from_their_indexes(ongoing_tournament.players))
         # Results display
         self.view.tournament_results_displa_begin(ongoing_tournament.name, higher_player_name_lenght)
 
-        for player in ongoing_tournament.players:
+        list_of_tournament_players = self.list_of_tournament_players_objects_from_their_indexes(ongoing_tournament.players)
+        for player in list_of_tournament_players:
+        #for player in ongoing_tournament.players:
             self.view.tournament_player_results_display(player.family_name, player.player_total_score_at_tournament_scale, player.rank)
 
         self.view.tournament_results_display_ending()
@@ -226,6 +253,7 @@ class Controller:
 
         # "If you want to see all players or all players of a tournament, classified by alphabetical or rank (classification) order, please press '7'" "\n"
         all_players_or_players_of_a_tournament = self.view.all_players_or_players_of_a_tournament()
+        list_of_players = [] # ????? pourquoi necessaire ? 
 
         # List of players = all players
         if all_players_or_players_of_a_tournament.lower() == "all":
@@ -236,11 +264,14 @@ class Controller:
             information = self.view.information_for_displaying_tournament_players()
             for tournament in Tournament.TOURNAMENTS:
                 if tournament.name == information:
-                    list_of_players = tournament.tournament_players_listing()
+                    list_of_players_indexes = tournament.tournament_players_listing()
+                    list_of_players = self.list_of_tournament_players_objects_from_their_indexes(list_of_players_indexes)
                 else: 
                     self.run() # user did not choose a correct tournament name
+
         else: 
             self.run() # user did not choose all or tournament
+
 
         # Players order
         players_order_choice = self.view.players_order_choice()
@@ -255,6 +286,19 @@ class Controller:
         # Display players
         for player in ordered_list_of_players:
             self.view.display_a_player(player)
+
+
+    def list_of_tournament_players_objects_from_their_indexes(self, players_indexes): #players_indexes sera un tournamentX.players
+        """Returns a list of players objects from their indexes"""
+        
+        list_of_tournament_players = []
+        for player_index in players_indexes:
+            for player in Player.PLAYERS :
+                if player_index == player.index:
+                    list_of_tournament_players.append(player)
+                else:
+                    pass
+        return list_of_tournament_players
 
 
     #===== RUN METHOD =====
@@ -391,14 +435,14 @@ class Controller:
             # Ajout du tournoi à la liste des tournois
             Tournament.add_tournament_to_TOURNAMENTS_list(tournament1)
             # Ajouter 8 joueurs au tournois:
-            tournament1.players.append(player1)
-            tournament1.players.append(player2)
-            tournament1.players.append(player3)
-            tournament1.players.append(player4)
-            tournament1.players.append(player5)
-            tournament1.players.append(player6)
-            tournament1.players.append(player7)
-            tournament1.players.append(player8)
+            tournament1.players.append(player1.index)
+            tournament1.players.append(player2.index)
+            tournament1.players.append(player3.index)
+            tournament1.players.append(player4.index)
+            tournament1.players.append(player5.index)
+            tournament1.players.append(player6.index)
+            tournament1.players.append(player7.index)
+            tournament1.players.append(player8.index)
 
             self.run()
             #========================================================================"""

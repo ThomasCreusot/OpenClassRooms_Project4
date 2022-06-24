@@ -24,7 +24,7 @@ class Tournament:
     # def __init__(..., player = None) --> Correct 
     # def __init__(..., ) --> Correct 
     def __init__(self, name, localisation, date_of_beginning, date_of_ending, time_controler, description, 
-                number_of_rounds = DEFAULT_VALUE_NUMBER_ROUNDS_PER_TOURNAMENT) :
+                number_of_rounds = DEFAULT_VALUE_NUMBER_ROUNDS_PER_TOURNAMENT, rounds = None, players = None) : #rounds = None, players = None 24062022
         self.name = name
         self.localisation = localisation
         self.date_of_beginning = date_of_beginning
@@ -32,8 +32,14 @@ class Tournament:
         self.time_controler = time_controler
         self.description = description
         self.number_of_rounds = number_of_rounds
-        self.rounds = []
-        self.players = []
+        if rounds == None:
+            self.rounds = []
+        else:
+            self.rounds = rounds 
+        if players == None:
+            self.players = []
+        else:
+            self.players = players 
 
 
     @classmethod
@@ -73,11 +79,11 @@ class Tournament:
         return matches_tuples_representation_list
 
     # Note : At the tournament scale, because it is applied to player of a tournament.
-    def SwissAlgorithm_applied_to_the_tournament_by_rank_classification(self): 
+    def SwissAlgorithm_applied_to_the_tournament_by_rank_classification(self, tournament_players): 
         """Returns pairs of players of a tournament; for matches of a round, based on their classification (rank)"""
 
         # 1. Au début du premier tour, triez tous les joueurs en fonction de leur classement
-        all_players_of_tournament_sorted_by_ranks = sorted(self.players, key=lambda x: x.rank, reverse=False)
+        all_players_of_tournament_sorted_by_ranks = sorted(tournament_players, key=lambda x: x.rank, reverse=False)
 
         # Verification qu'on a un nombre impair de joueurs
         if (len(all_players_of_tournament_sorted_by_ranks)) % 2 == 0 : 
@@ -108,7 +114,7 @@ class Tournament:
         #--> nouvelle fonction
 
 
-    def SwissAlgorithm_applied_to_the_tournament_by_score_classification(self): 
+    def SwissAlgorithm_applied_to_the_tournament_by_score_classification(self, tournament_players): 
         """Returns pairs of players of a tournament for matches of a round, based on their number of points"""
 
         #Pour chaque joueur, on cherche la somme de ces points accumulés pendant le round :
@@ -118,7 +124,7 @@ class Tournament:
         # 3. Etablir une nouvelle liste et la trier
 
         #Etapes 1 et 2
-        for player in self.players:
+        for player in tournament_players:
             #Reinitialisation of the player score at the round scale
             player.player_score_at_round_scale = 0
 
@@ -135,7 +141,7 @@ class Tournament:
                             player.player_score_at_round_scale += player_and_its_score[1]
 
         #Etape 3
-        all_players_of_tournament_sorted_by_score_at_round_scale = sorted(self.players, key=lambda x: \
+        all_players_of_tournament_sorted_by_score_at_round_scale = sorted(tournament_players, key=lambda x: \
             x.player_score_at_round_scale, reverse=True) #Ordre decroissant pour avoir le meilleur score en premier
 
         # https://docs.python.org/fr/3/howto/sorting.html#sortinghowto
@@ -211,13 +217,13 @@ class Tournament:
                 'date_of_ending' : tournament_instance.date_of_ending, 
                 'time_controler' : tournament_instance.time_controler, 
                 'description' : tournament_instance.description,
-                'number_of_rounds' : tournament_instance.number_of_rounds
+                'number_of_rounds' : tournament_instance.number_of_rounds,
+                #'rounds' : tournament_instance.rounds,
+                'players' : tournament_instance.players
             }
-            print(serialized_tournament)
+
             serialized_tournaments.append(serialized_tournament)
-
         return serialized_tournaments
-
 
     @classmethod
     def write_serialized_tournament_in_tinydb_database(cls):
@@ -241,5 +247,8 @@ class Tournament:
             tournament_description = serialized_tournament['description']
             tournament_number_of_rounds = serialized_tournament['number_of_rounds']
 
-            tournament_instance = Tournament(tournament_name, tournament_localisation, tournament_date_of_beginning, tournament_date_of_ending, tournament_time_controler, tournament_description, tournament_number_of_rounds)
+            tournament_rounds = serialized_tournament['rounds']
+            tournament_players = serialized_tournament['players']
+
+            tournament_instance = Tournament(tournament_name, tournament_localisation, tournament_date_of_beginning, tournament_date_of_ending, tournament_time_controler, tournament_description, tournament_number_of_rounds, tournament_rounds, tournament_players)
             Tournament.add_tournament_to_TOURNAMENTS_list(tournament_instance)

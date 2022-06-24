@@ -29,15 +29,15 @@ class Player:
 
     # def __init__ initial, avant la mise en place de tinydb ; je le garde pour pouvoir continuer à créer de nouveaux 
     # joueurs
-    def __init__(self, index, family_name, first_name, birth_date, gender, rank) :
+    def __init__(self, index, family_name, first_name, birth_date, gender, rank, player_score_at_round_scale=0, player_total_score_at_tournament_scale=0) :
         self.index = index
         self.family_name = family_name
         self.first_name = first_name
         self.birth_date = birth_date
         self.gender = gender
         self.rank = rank
-        self.player_score_at_round_scale = 0
-        self.player_total_score_at_tournament_scale = 0
+        self.player_score_at_round_scale = player_score_at_round_scale
+        self.player_total_score_at_tournament_scale = player_total_score_at_tournament_scale
 
 
     @classmethod
@@ -101,9 +101,11 @@ class Player:
                 'first_name' : player_instance.first_name, 
                 'birth_date' : player_instance.birth_date, 
                 'gender' : player_instance.gender, 
-                'rank' : player_instance.rank
+                'rank' : player_instance.rank,
+
+                'player_score_at_round_scale' : player_instance.player_score_at_round_scale,
+                'player_total_score_at_tournament_scale' : player_instance.player_total_score_at_tournament_scale
             }
-            print(serialized_player)
             serialized_players.append(serialized_player)
         return serialized_players
 
@@ -130,7 +132,10 @@ class Player:
             player_gender = serialized_player['gender']
             player_rank = serialized_player['rank']
 
-            player_instance = Player(player_index, player_family_name, player_first_name, player_birth_date, player_gender, player_rank)
+            player_score_at_round_scale = serialized_player['player_score_at_round_scale']
+            player_total_score_at_tournament_scale = serialized_player['player_total_score_at_tournament_scale']
+
+            player_instance = Player(player_index, player_family_name, player_first_name, player_birth_date, player_gender, player_rank, player_score_at_round_scale, player_total_score_at_tournament_scale)
             Player.add_player_to_PLAYERS_list(player_instance)
 
         # ????? : a tester: 
