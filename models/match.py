@@ -9,8 +9,9 @@ class Match:
 
 
     def match_tuple_representation(self):
+        """Returns a representation of the match, under a tuple format """
+
         self.match_tuple_representation = ([self.player_1_instance, self.player_1_score], \
             [self.player_2_instance, self.player_2_score])
 
-        #TESTOK: print("Match tuple representation", self.match_tuple_representation)
         return self.match_tuple_representation

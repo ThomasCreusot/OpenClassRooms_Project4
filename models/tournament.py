@@ -2,16 +2,27 @@
 # https://docs.python.org/fr/3/library/functions.html#sorted
 # https://docs.python.org/fr/3/howto/sorting.html#sortinghowto 
 
+
+from tinydb import TinyDB
+import json
+
+
 DEFAULT_VALUE_NUMBER_ROUNDS_PER_TOURNAMENT = "4"
+
+
+database = TinyDB('db.json') 
+tournaments_table = database.table('tournaments')
+
 
 class Tournament:
     """Represents a tournament"""
 
-    TOURNAMENTS = [] # Class attribut, will contains the list of all tournaments 
+    # Class attribute, will contains the list of all tournaments
+    TOURNAMENTS = []  
 
-    # def __ini__(..., player = []) --> Not correct (variable at the scale of the class) 
-    # def __ini__(..., player = None) --> Correct 
-    # def __ini__(..., ) --> Correct 
+    # def __init__(..., player = []) --> Not correct (variable at the scale of the class) 
+    # def __init__(..., player = None) --> Correct 
+    # def __init__(..., ) --> Correct 
     def __init__(self, name, localisation, date_of_beginning, date_of_ending, time_controler, description, 
                 number_of_rounds = DEFAULT_VALUE_NUMBER_ROUNDS_PER_TOURNAMENT) :
         self.name = name
@@ -37,32 +48,18 @@ class Tournament:
         """Returns the list containing all tournaments in TOURNAMENTS"""
 
         return Tournament.TOURNAMENTS
-        #VIEWS : print(Tournament.listing_all_tournaments())
 
 
-    def tournament_players_listing_alphabectic_order(self):
-        """Returns the list containing all players of a tournament, by alphabetic order"""
+    def tournament_players_listing(self):
+        """Returns the list containing all players of a tournament"""
 
-        all_players_of_tournament_sorted_by_family_name = \
-            sorted(self.players, key=lambda x: x.family_name, reverse=False)
-
-        return all_players_of_tournament_sorted_by_family_name
-        #VIEWS : print(Tournament.tournament_players_listing_alphabectic_order())
-
-
-    def tournament_players_listing_by_rank_order(self):
-        """Returns the list containing all players of a tournament, by rank order"""
-
-        all_players_of_tournament_sorted_by_rank = sorted(self.players, key=lambda x: x.rank, reverse=False)
-        return all_players_of_tournament_sorted_by_rank
-        #VIEWS : print(Tournament.tournament_players_listing_by_rank_order())
+        return self.players
 
 
     def tournament_rounds_listing(self):
         """Returns the list containing all rounds of a tournament"""
 
         return self.rounds
-        #VIEWS : print(tournamentX.tournament_rounds_listing())
 
 
     def tournament_matches_listing(self):
@@ -75,9 +72,8 @@ class Tournament:
 
         return matches_tuples_representation_list
 
-
+    # Note : At the tournament scale, because it is applied to player of a tournament.
     def SwissAlgorithm_applied_to_the_tournament_by_rank_classification(self): 
-        # Note : At the tournament scale, because it is applied to player of a tournament.
         """Returns pairs of players of a tournament; for matches of a round, based on their classification (rank)"""
 
         # 1. Au début du premier tour, triez tous les joueurs en fonction de leur classement
@@ -101,11 +97,10 @@ class Tournament:
             for i in range(0,(len(higher_half_of_players_sorted_by_ranks))):
                 pair = (higher_half_of_players_sorted_by_ranks[i], lower_half_of_players_sorted_by_ranks[i])
                 pairs.append(pair)
+            return pairs
 
-        else:
-            print("Even number of players")
-
-        return pairs
+        else: #Even number of players
+            return None 
 
         #3.	Au prochain tour, triez tous les joueurs en fonction de leur nombre total de points  : 
         # nombre de points est relatif au joueur au sein du tournois). Si plusieurs joueurs ont le même nombre de 
@@ -190,7 +185,61 @@ class Tournament:
                 all_players_of_tournament_sorted_by_score_at_round_scale.remove(pair[1])
                 pairs.append(pair)
 
-        else:
-            print("Even number of players")
+            return pairs
 
-        return pairs
+        else: #Even number of players
+            return None
+
+
+    #_____DATA BASE METHODS _____
+
+    @classmethod
+    def save_tournament_serialisation_from_python_to_json(cls):
+        """Serialises python objects (tournament) at the json format and returns a list of these serialized objects"""
+
+        all_tournaments_python = cls.TOURNAMENTS
+        serialized_tournaments = []
+
+        #Question: ne peut on pas automatiser avec quelque chose de la forme
+        # ' for attr_name, attr_value in player_instance.items() '
+        # peut etre pas 'items' car ce n'est pas un tableau mais une instance
+        for tournament_instance in all_tournaments_python:
+            serialized_tournament = {
+                'name' : tournament_instance.name, 
+                'localisation' : tournament_instance.localisation, 
+                'date_of_beginning' : tournament_instance.date_of_beginning, 
+                'date_of_ending' : tournament_instance.date_of_ending, 
+                'time_controler' : tournament_instance.time_controler, 
+                'description' : tournament_instance.description,
+                'number_of_rounds' : tournament_instance.number_of_rounds
+            }
+            print(serialized_tournament)
+            serialized_tournaments.append(serialized_tournament)
+
+        return serialized_tournaments
+
+
+    @classmethod
+    def write_serialized_tournament_in_tinydb_database(cls):
+        """Inserts serialized tournaments at json format into player table of the tinydb database"""
+        serialized_tournaments = Tournament.save_tournament_serialisation_from_python_to_json()
+        tournaments_table.truncate() #clear the table first
+        tournaments_table.insert_multiple(serialized_tournaments)
+
+
+    @classmethod
+    def load_tournaments_from_tinydb_at_python_format(cls):
+        "Load all players from the tinydb database and convert them in python objects"
+
+        serialized_tournaments = tournaments_table.all() 
+        for serialized_tournament in serialized_tournaments:
+            tournament_name = serialized_tournament['name']
+            tournament_localisation = serialized_tournament['localisation']
+            tournament_date_of_beginning = serialized_tournament['date_of_beginning']
+            tournament_date_of_ending = serialized_tournament['date_of_ending']
+            tournament_time_controler = serialized_tournament['time_controler']
+            tournament_description = serialized_tournament['description']
+            tournament_number_of_rounds = serialized_tournament['number_of_rounds']
+
+            tournament_instance = Tournament(tournament_name, tournament_localisation, tournament_date_of_beginning, tournament_date_of_ending, tournament_time_controler, tournament_description, tournament_number_of_rounds)
+            Tournament.add_tournament_to_TOURNAMENTS_list(tournament_instance)
