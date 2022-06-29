@@ -106,7 +106,7 @@ class Controller:
         round_information = self.view.information_for_round_initialization()
         round_name = round_information
         round_date_and_time_beginning = datetime.now()
-        round_date_and_time_ending = "" #Will be completed at the end of the round
+        round_date_and_time_ending = ""
 
         round = Round(round_name, round_date_and_time_beginning, round_date_and_time_ending)
         return round
@@ -115,7 +115,8 @@ class Controller:
     def round_termination(self, round):
         """Registers the ending time of a round"""
 
-        round.round_date_and_time_ending = datetime.now()
+        round.date_and_time_ending = datetime.now()
+        print(round.date_and_time_ending)
 
 
     def player_rank_manual_modification(self, tournament):
@@ -198,7 +199,10 @@ class Controller:
                 for pair in pairs:
                     # Match annoucement and creation
                     self.view.match_annoucement(pair[0].family_name, pair[1].family_name)
-                    ongoing_match = Match(pair[0],pair[1]) #pair[0] and pair[1] are a Player instance, respectively
+
+                    # code before modification of Match class (players instances --> players indexes)
+                    #ongoing_match = Match(pair[0],pair[1]) #pair[0] and pair[1] are a Player instance, respectively
+                    ongoing_match = Match(pair[0].index,pair[1].index) #pair[0] and pair[1] are a Player instance, respectively
 
                     # End of the match, time to enter the results 
                     match_result_information = self.view.match_results_information(pair[0], pair[1]) #pair[1] is a Player instance
@@ -229,6 +233,7 @@ class Controller:
 
 
             # End of the round
+
             self.round_termination(round_instance)
         
         # End of the tournament
@@ -266,8 +271,10 @@ class Controller:
                 if tournament.name == information:
                     list_of_players_indexes = tournament.tournament_players_listing()
                     list_of_players = self.list_of_tournament_players_objects_from_their_indexes(list_of_players_indexes)
+
                 else: 
-                    self.run() # user did not choose a correct tournament name
+                    pass # user did not choose a correct tournament name. Pass and not self.run() because of il/else structure 
+
 
         else: 
             self.run() # user did not choose all or tournament
@@ -286,6 +293,7 @@ class Controller:
         # Display players
         for player in ordered_list_of_players:
             self.view.display_a_player(player)
+
 
 
     def list_of_tournament_players_objects_from_their_indexes(self, players_indexes): #players_indexes sera un tournamentX.players
@@ -408,7 +416,7 @@ class Controller:
 
         # Gain of time for testing
         elif menu_choice.lower() == "test": # 
-            print("Creation of 8 factice players and a tournament named 'a', please made the choice 5")
+            print("Creation of 8 factice players and a tournament named 'a', please made the choice 'play a tournament'")
 
             # Creation 8 joueurs
             player1 = Player(1, "family_name_1", "first_name_1", "birth_date_1", "gender_1", 1)

@@ -78,6 +78,7 @@ class Tournament:
 
         return matches_tuples_representation_list
 
+
     # Note : At the tournament scale, because it is applied to player of a tournament.
     def SwissAlgorithm_applied_to_the_tournament_by_rank_classification(self, tournament_players): 
         """Returns pairs of players of a tournament; for matches of a round, based on their classification (rank)"""
@@ -130,15 +131,23 @@ class Tournament:
 
             #On parcourt tous les rounds qui ont eu lieu
             for round in self.rounds:
+
                 #On parcourt tous les matches du round
                 for match in round.matches_tuples_representations: 
-                    for player_and_its_score in match:
-                        #Si le joueur est bien celui qui nous interesse dans la boucle actuelle
-                        if player == player_and_its_score[0]:
+                    #print("match", match) >>> match ([2, 0.0], [6, 1.0])
+
+                    for player_index_and_its_score in match:
+                    #for player_and_its_score in match:
+
+                        #Si le joueur est bien celui qui nous interesse dans la boucle actuelle 
+                        if player.index == player_index_and_its_score[0]:
+                        #if player == player_and_its_score[0]: --> lorsque je travaillais avec les instances
                             #print(player_and_its_score[0].family_name, "got the score", player_and_its_score[1], \
                             #    "during the match", match)
 
-                            player.player_score_at_round_scale += player_and_its_score[1]
+                            player.player_score_at_round_scale += player_index_and_its_score[1]
+
+
 
         #Etape 3
         all_players_of_tournament_sorted_by_score_at_round_scale = sorted(tournament_players, key=lambda x: \
@@ -149,21 +158,27 @@ class Tournament:
         # fait avec le score
         sorted(all_players_of_tournament_sorted_by_score_at_round_scale, key=lambda x: x.rank, reverse=True)
 
+
         # Verification qu'on a un nombre impair de joueurs
         if (len(all_players_of_tournament_sorted_by_score_at_round_scale)) % 2 == 0 : 
             # Pairs: variable dans laquelle on va stocker les paires de joueurs qui vont s'affronter
             pairs = []
             
             # Liste des joueurs déja affrontés déja joués
-            couple_of_player_already_played_together_list = []
+            couple_of_index_player_already_played_together_list = []
+            #couple_of_player_already_played_together_list = []
             for round in self.rounds:
                 matches = round.matches_tuples_representations
                 for match in matches:
-                    couple_of_player_already_played_together = (match[0][0], match[1][0])
-                    couple_of_player_already_played_together_list.append(couple_of_player_already_played_together)
+                    couple_of_index_player_already_played_together = (match[0][0], match[1][0]) # match[0][0]= un index et non plus une instance de joueurs ici
+
+                    couple_of_index_player_already_played_together_list.append(couple_of_index_player_already_played_together)
+                    #couple_of_player_already_played_together_list.append(couple_of_player_already_played_together)
+
                     #reversed: we need to found matches x-y or y-x
-                    couple_of_player_already_played_together_reversed = (match[1][0], match[0][0])
-                    couple_of_player_already_played_together_list.append(couple_of_player_already_played_together_reversed)                    
+                    couple_of_index_player_already_played_together_reversed = (match[1][0], match[0][0])
+                    couple_of_index_player_already_played_together_list.append(couple_of_index_player_already_played_together_reversed)
+                    #couple_of_player_already_played_together_list.append(couple_of_player_already_played_together_reversed)                    
 
             # Création des paires
             for x in range(0,int(len(all_players_of_tournament_sorted_by_score_at_round_scale)/2)):
@@ -174,11 +189,11 @@ class Tournament:
                     #print("recherche d'adversaire contre le joueur à la position {0} de la liste".format(i))
                     #print("est ce que le joueur à la position {0} de la liste fera l'affaire ? ".format(j))
                     # Paire potentielle
-                    potential_pair = (all_players_of_tournament_sorted_by_score_at_round_scale[i], \
-                        all_players_of_tournament_sorted_by_score_at_round_scale[j])
+                    potential_pair = (all_players_of_tournament_sorted_by_score_at_round_scale[i].index, \
+                        all_players_of_tournament_sorted_by_score_at_round_scale[j].index)
 
                     #On vérifie que la paire potentielle n'a pas été jouée, sauf s'il ne reste plus que deux joueurs et que les autres ont été assignés à des paires
-                    if not potential_pair in couple_of_player_already_played_together_list or (len(all_players_of_tournament_sorted_by_score_at_round_scale)) == 2 :
+                    if not potential_pair in couple_of_index_player_already_played_together_list or (len(all_players_of_tournament_sorted_by_score_at_round_scale)) == 2 :
                         adversary_has_been_found == True
                         break
 
@@ -186,12 +201,25 @@ class Tournament:
                         adversary_has_been_found == False
                         j+=1
 
-                pair = potential_pair
-                all_players_of_tournament_sorted_by_score_at_round_scale.remove(pair[0])
+
+                #On a travaillé à partir des index des joueurs, on souhaite désormais récupérer les instances de ces joueurs pour les retourner au controlleur
+                player_1_index = potential_pair[0]
+                player_2_index = potential_pair[1]
+
+                for player in all_players_of_tournament_sorted_by_score_at_round_scale:
+                    if player.index == player_1_index:
+                        player_1_instance = player
+                    if player.index == player_2_index:
+                        player_2_instance = player
+
+                pair = (player_1_instance, player_2_instance) 
+                #pair = (potential_pair)
+
+                all_players_of_tournament_sorted_by_score_at_round_scale.remove(pair[0]) 
                 all_players_of_tournament_sorted_by_score_at_round_scale.remove(pair[1])
                 pairs.append(pair)
 
-            return pairs
+            return pairs #retourne des paires d'instances de joueurs
 
         else: #Even number of players
             return None
@@ -210,6 +238,12 @@ class Tournament:
         # ' for attr_name, attr_value in player_instance.items() '
         # peut etre pas 'items' car ce n'est pas un tableau mais une instance
         for tournament_instance in all_tournaments_python:
+            
+            serialised_rounds = []
+            for round in tournament_instance.rounds:
+                serialised_round = round.round_serialisation()
+                serialised_rounds.append(serialised_round)
+            
             serialized_tournament = {
                 'name' : tournament_instance.name, 
                 'localisation' : tournament_instance.localisation, 
@@ -219,6 +253,7 @@ class Tournament:
                 'description' : tournament_instance.description,
                 'number_of_rounds' : tournament_instance.number_of_rounds,
                 #'rounds' : tournament_instance.rounds,
+                'rounds' : serialised_rounds,
                 'players' : tournament_instance.players
             }
 
@@ -247,8 +282,32 @@ class Tournament:
             tournament_description = serialized_tournament['description']
             tournament_number_of_rounds = serialized_tournament['number_of_rounds']
 
-            tournament_rounds = serialized_tournament['rounds']
+            tournament_rounds_dictionnary = serialized_tournament['rounds'] 
+            #print(tournament_rounds)
+            # >>> {'name': 'r1', 'date_and_time_beginning': '2022-06-29 13:12:45.732469', 'date_and_time_ending': '2022-06-29 13:12:48.077567', 'matches_tuples_representations': '[([1, 0.0], [5, 1.0]), ([2, 0.0], [6, 1.0]), ([3, 0.0], [7, 1.0]), ([4, 0.0], [8, 1.0])]'}
+            # >>> {'name': 'r2', 'date_and_time_beginning': '2022-06-29 13:12:49.548917', 'date_and_time_ending': '2022-06-29 13:12:51.548900', 'matches_tuples_representations': '[([5, 0.0], [6, 1.0]), ([7, 0.0], [8, 1.0]), ([1, 0.0], [2, 1.0]), ([3, 0.0], [4, 1.0])]'}
+            # >>> {'name': 'r3', 'date_and_time_beginning': '2022-06-29 13:12:53.004832', 'date_and_time_ending': '2022-06-29 13:12:55.925701', 'matches_tuples_representations': '[([6, 0.0], [8, 1.0]), ([2, 0.0], [4, 1.0]), ([5, 0.0], [7, 1.0]), ([1, 0.0], [3, 1.0])]'}
+            # >>> {'name': 'r4', 'date_and_time_beginning': '2022-06-29 13:12:57.597822', 'date_and_time_ending': '2022-06-29 13:13:02.637066', 'matches_tuples_representations': '[([8, 0.0], [2, 1.0]), ([4, 0.5], [6, 0.5]), ([7, 0.5], [1, 0.5]), ([3, 1.0], [5, 0.0])]'}
+
+
+            # stratégie: on créé une instance de tournois
+            # on retourne les infos nécéssaires à la création d'une instance de round
+            # on créé l'instance de round, on l'ajout à tournois.rounds
+            # le probleme : comment faire le lien entre une instance de round et le tournois auquel elle appartient... on pourrait ajouter un champ 'tournament name' au round
+            #et donc ajouter un champ 'tournament_name' et "round name" pour les matches.
+            #c'est la meilleure solution que j'ai à ce jour !
+            #je vois pas plus simple.
+
+            tournament_rounds_python_list_format = []
+            for tournament_round_dictionnary in tournament_rounds_dictionnary: #dictionnaire contenant les rounds, dictionnaire car issu d'un json
+                print(tournament_round_dictionnary['name'])
+                print(tournament_round_dictionnary['date_and_time_beginning'])
+                print(tournament_round_dictionnary['date_and_time_ending'])
+                print(tournament_round_dictionnary['matches_tuples_representations'])
+
+
             tournament_players = serialized_tournament['players']
 
+            #tournament_instance = Tournament(tournament_name, tournament_localisation, tournament_date_of_beginning, tournament_date_of_ending, tournament_time_controler, tournament_description, tournament_number_of_rounds, tournament_players)
             tournament_instance = Tournament(tournament_name, tournament_localisation, tournament_date_of_beginning, tournament_date_of_ending, tournament_time_controler, tournament_description, tournament_number_of_rounds, tournament_rounds, tournament_players)
             Tournament.add_tournament_to_TOURNAMENTS_list(tournament_instance)

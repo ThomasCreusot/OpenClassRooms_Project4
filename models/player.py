@@ -30,7 +30,7 @@ class Player:
     # def __init__ initial, avant la mise en place de tinydb ; je le garde pour pouvoir continuer à créer de nouveaux 
     # joueurs
     def __init__(self, index, family_name, first_name, birth_date, gender, rank, player_score_at_round_scale=0, player_total_score_at_tournament_scale=0) :
-        self.index = index
+        self.index = int(index)
         self.family_name = family_name
         self.first_name = first_name
         self.birth_date = birth_date

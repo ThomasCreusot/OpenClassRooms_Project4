@@ -104,7 +104,7 @@ class View:
         """Asks information for adding a player to a tournament"""
 
         information_tournament = input("In which tournament do you want to add a Player ? ")
-        information_player = input("Which player do you want to add to the tournament ? Please write the index of the player. ")
+        information_player = int(input("Which player do you want to add to the tournament ? Please write the index of the player. "))
 
         return information_tournament, information_player
 
@@ -263,9 +263,9 @@ class View:
             for match_tuple in matches_tuples_representation:
                 print("")
                 print("    Match result")
-                print("    Player {0} played against {0}; results are as follows:".format(match_tuple[0][0].family_name, match_tuple[1][0].family_name))
-                print("        Player {0} score of the match: {1}".format(match_tuple[0][0].family_name, match_tuple[0][1]))
-                print("        Player {0} score of the match: {1}".format(match_tuple[1][0].family_name, match_tuple[1][1]))
+                print("    Player with index {0} played against player with index {1}; results are as follows:".format(match_tuple[0][0], match_tuple[1][0]))
+                print("        Player index {0} score of the match: {1}".format(match_tuple[0][0], match_tuple[0][1]))
+                print("        Player index {0} score of the match: {1}".format(match_tuple[1][0], match_tuple[1][1]))
 
     def even_players_alert():
         """Alerts the user that the number of players is event"""
