@@ -1,19 +1,4 @@
 """Defines the main controller which is responsible for the logic of the program."""
-# CONSEIL OC : Vous pouvez avoir un contrôleur « Application », qui instanciera :
-# un contrôleur `MenuManager`;
-# un contrôleur `TournamentManager`;
-# un contrôleur `UserManager`.
-# Pas mis en place; Je suppose que ca donnerait :
-# Class Controller:
-#     def __init__(self, MenuManager, TournamentManager, UserManager)
-#         ...
-# controller = Controler(menu_manager, ...)
-# Class MenuManager:
-#     def __init__(self)
-#         ...
-# menu_manager = MenuManager()
-# et, dans l'instance de classe de Controller:
-# self.menu_manager.nom_de_methode()
 
 
 from datetime import datetime
@@ -81,7 +66,7 @@ class Controller:
             self.player_initialization()
 
     def add_player_to_a_tournament(self):
-        """Add a player to the tournament.players list"""
+        """Adds a player to a tournament.players list"""
 
         information = self.view.information_for_adding_player_to_tournament()
 
@@ -97,7 +82,7 @@ class Controller:
             self.add_player_to_a_tournament()
 
     def round_initialization(self, tournament_in_which_round_was_played):
-        """Allows to create a Round instance, with automatization of time of begining"""
+        """Initializes a Round instance, with automatization of time of begining"""
 
         round_information = self.view.information_for_round_initialization()
         round_name = round_information
@@ -128,19 +113,8 @@ class Controller:
                 self.view.wrong_player_rank()
                 self.player_rank_manual_modification(self, tournament)
 
-        """ avant modif bdd 24062022
-        for player in tournament.players:
-            newrank = self.view.rank_player_information(player)
-
-            if newrank.isdigit() :
-                player.rank = newrank
-
-            else:
-                self.view.wrong_player_rank()
-        """
-
     def player_rank_update(self):
-        """Allows to modify the rank of a player at the end of the tournament"""
+        """Allows to modify the rank of a player at the end of a tournament"""
 
         information = self.view.information_for_updating_player_rank()
 
@@ -157,7 +131,7 @@ class Controller:
             self.player_rank_update()
 
     def play_a_tournament(self):
-        """Organise the succession of event for playing a tournament"""
+        """Organises the succession of events for playing a tournament"""
 
         tournament_to_play_name = self.view.information_tournament_to_play()
 
@@ -231,7 +205,7 @@ class Controller:
 
                     else:
                         self.view.wrong_player_score()
-            else:  # Pairs == None
+            else:  # Pairs is None
                 self.view.even_players_alert()
 
             # End of the round
@@ -258,7 +232,7 @@ class Controller:
         self.view.tournament_results_display_ending()
 
     def players_displaying_general_method(self):
-        """Organises the event to display players (all or from a tournament) by family name or rank order"""
+        """Organises the events to display players (all or from a tournament) by family name or rank order"""
 
         # "If you want to see all players or all players of a tournament, classified by alphabetical or rank
         # (classification) order, please press '7'" "\n"
@@ -301,8 +275,8 @@ class Controller:
             self.view.display_a_player(player)
 
     def list_of_tournament_players_objects_from_their_indexes(self, players_indexes):
-        """Returns a list of players objects from their indexes"""
-        # Players_indexes correspond to a tournamentX.players
+        """Returns a list of players objects from their indexes
+        Players_indexes correspond to a tournamentX.players"""
 
         list_of_tournament_players = []
         for player_index in players_indexes:
@@ -328,7 +302,7 @@ class Controller:
             self.player_initialization()
             self.run()
 
-        elif menu_choice == "3":  # Add player to a tournament
+        elif menu_choice == "3":  # Add a player to a tournament
             self.add_player_to_a_tournament()
             self.run()
 
@@ -336,21 +310,21 @@ class Controller:
             self.play_a_tournament()
             self.run()
 
-        elif menu_choice == "5":  # Player rank update
+        elif menu_choice == "5":  # Update a player rank
             self.player_rank_update()
             self.run()
 
-        elif menu_choice == "6":  # Shows players (all or from a tournament), by family name or rank order
+        elif menu_choice == "6":  # Display players (all or from a tournament), by family name or by rank order
             self.players_displaying_general_method()
             self.run()
 
-        elif menu_choice == "71":  # "If you want to see all tournaments, please press '81'" "\n"
+        elif menu_choice == "71":  # Display all tournaments
             all_registered_tournaments = Tournament.listing_all_tournaments()
             self.view.display_all_tournaments(all_registered_tournaments)
 
             self.run()
 
-        elif menu_choice == "72":  # "If you want to see all round of a tournament, please press '82'" "\n"
+        elif menu_choice == "72":  # Display all round of a tournament
             information = self.view.information_for_displaying_tournament_rounds_or_matches()
             for tournament in Tournament.TOURNAMENTS:
                 if tournament.name == information:
@@ -359,16 +333,13 @@ class Controller:
 
             self.run()
 
-        elif menu_choice == "73":  # "If you want to see all matches of a tournament, please press '83'" "\n"
+        elif menu_choice == "73":  # Display all matches of a tournament
             information = self.view.information_for_displaying_tournament_rounds_or_matches()
 
             for tournament in Tournament.TOURNAMENTS:
                 if tournament.name == information:
                     matches_tuples_representation_list = tournament.tournament_matches_listing()
-                    # Match display : first version
-                    # self.view.display_matches_result(matches_tuples_representation_list)
 
-            # Match display : second version
             for matches_tuples_representation in matches_tuples_representation_list:
 
                 round_name = matches_tuples_representation[0][3]
@@ -414,14 +385,10 @@ class Controller:
             elif database_menu_choice == "4":
                 list_of_all_rounds_from_database_at_json_format = \
                     Tournament.load_tournaments_from_tinydb_at_python_format()
-                # TEST_OK
-                # print("list_of_all_rounds_from_database_at_json_format", \
-                #    list_of_all_rounds_from_database_at_json_format)
 
                 # Round deserialization :
                 # >>> list of all rounds instances at python format --> return[0]
                 # >>> list of all matches instances at json format --> return[1]
-
                 all_rounds_from_database_at_python_format = Round.round_deserialization_from_json_to_python_format(
                     list_of_all_rounds_from_database_at_json_format)[0]
                 # TEST_OK print(all_rounds_from_database_at_python_format)
@@ -434,36 +401,23 @@ class Controller:
                             tournament.rounds.append(round_instance)
                             # TEST_OK print(round_instance.name, "added to", tournament.name)
 
-                # TEST OK
-                # for tournament in Tournament.TOURNAMENTS:
-                #    print("list of rounds of the tournament", tournament.name)
-                #    for round in tournament.rounds:
-                #        print("--> round", round.name)
-
                 all_matches_tuples_representation_list_from_database_at_json_format = \
                     Round.round_deserialization_from_json_to_python_format(
                         list_of_all_rounds_from_database_at_json_format)[1]
 
-                # Creation d'un objet Match: non nécéssaire, on va le créer pour lui appliquer la méthode
-                # match_tuple_representation()
-                # On va le faire quand même parceque comme ca, si on veut changer la représentation du tuple,
-                # elle se fait partout : ségrégation responsabilité
-
+                # Creation of a Match object is not mandatory (because of tuple representation of the watch); however,
+                # I choosed to create a Match object to respect responsability segregation. This would be usefull in
+                # in case of modification of the tuple representation
                 for matches_at_round_scale_at_json_format in \
                         all_matches_tuples_representation_list_from_database_at_json_format:
                     for match_at_json_format in matches_at_round_scale_at_json_format:
                         # print(match_at_json_format)
                         # >>>[[1, 1.0], [5, 0.0], 'a', 'r1a']
-
                         match_instance = Match(match_at_json_format[2], match_at_json_format[3],
                                                match_at_json_format[0][0], match_at_json_format[1][0],
                                                match_at_json_format[0][1], match_at_json_format[1][1])
 
                         match_instance_tuple_representation = match_instance.match_tuple_representation()
-
-                        # Maintenant on souhaite ajouter cette représentation au round; comme plusieurs rounds de
-                        # différents tournois peuvent avoir le meme nom (round1, par exemple), on cherche aussi le bon
-                        # tournois
 
                         for tournament in Tournament.TOURNAMENTS:
                             if tournament.name == match_at_json_format[2]:
@@ -487,15 +441,15 @@ class Controller:
 
             self.run()
 
-        # =============AUTOMATISATION OF CREATION OF 16 PLAYER=====================
-        # ========================AND A TOURNAMENT================================
+        # =============AUTOMATISATION OF CREATION OF 16 PLAYERS=====================
+        # ========================AND 2 TOURNAMENTS ================================
 
-        # Gain of time for testing
+        # Gain of time for testing; this part should not be included in the final version
         elif menu_choice.lower() == "test":
             print("Creation of 16 factice players and two tournaments named 'a' and 'b', please made the choice" "\n"
                   "'play a tournament'")
 
-            # Creation 8 joueurs
+            # Creation of 16 players
             player1 = Player(1, "family_name_1", "first_name_1", "birth_date_1", "gender_1", 1)
             player2 = Player(2, "family_name_2", "first_name_2", "birth_date_2", "gender_2", 2)
             player3 = Player(3, "family_name_3", "first_name_3", "birth_date_3", "gender_3", 3)
@@ -505,17 +459,16 @@ class Controller:
             player7 = Player(7, "family_name_7", "first_name_7", "birth_date_7", "gender_7", 7)
             player8 = Player(8, "family_name_8", "first_name_8", "birth_date_8", "gender_8", 8)
 
-            player9 = Player(9, "family_name_", "first_name_", "birth_date_", "gender_", 9)
-            player10 = Player(10, "family_name_", "first_name_", "birth_date_", "gender_", 10)
-            player11 = Player(11, "family_name_", "first_name_", "birth_date_", "gender_", 11)
-            player12 = Player(12, "family_name_", "first_name_", "birth_date_", "gender_", 12)
-            player13 = Player(13, "family_name_", "first_name_", "birth_date_", "gender_", 13)
-            player14 = Player(14, "family_name_", "first_name_", "birth_date_", "gender_", 14)
-            player15 = Player(15, "family_name_", "first_name_", "birth_date_", "gender_", 15)
-            player16 = Player(16, "family_name_", "first_name_", "birth_date_", "gender_", 16)
+            player9 = Player(9, "family_name_", "first_name_9", "birth_date_9", "gender_9", 9)
+            player10 = Player(10, "family_name_", "first_name_10", "birth_date_10", "gender_10", 10)
+            player11 = Player(11, "family_name_", "first_name_11", "birth_date_11", "gender_11", 11)
+            player12 = Player(12, "family_name_", "first_name_12", "birth_date_12", "gender_12", 12)
+            player13 = Player(13, "family_name_", "first_name_13", "birth_date_13", "gender_13", 13)
+            player14 = Player(14, "family_name_", "first_name_14", "birth_date_14", "gender_14", 14)
+            player15 = Player(15, "family_name_", "first_name_15", "birth_date_15", "gender_15", 15)
+            player16 = Player(16, "family_name_", "first_name_16", "birth_date_16", "gender_16", 16)
 
-            # Ajout de chaque joueur créé (instances de classe) à l'attribut de classe PLAYERS qui est la liste
-            # contenant tous les joueurs
+            # Adding each player (class instance) to the class attribute PLAYERS which is the list of all players
             Player.add_player_to_PLAYERS_list(player1)
             Player.add_player_to_PLAYERS_list(player2)
             Player.add_player_to_PLAYERS_list(player3)
@@ -534,11 +487,11 @@ class Controller:
             Player.add_player_to_PLAYERS_list(player15)
             Player.add_player_to_PLAYERS_list(player16)
 
-            # Creation d'un tournoi
-            tournament1 = Tournament("a", "Toulouse", "début", "fin", "blitz", "description blabla")
-            # Ajout du tournoi à la liste des tournois
+            # Tournament creation
+            tournament1 = Tournament("a", "Toulouse", "01/01/2001", "02/01/2021", "blitz", "Description blabla1")
+            # Adding tournament to the list of tournaments
             Tournament.add_tournament_to_TOURNAMENTS_list(tournament1)
-            # Ajouter 8 joueurs au tournois:
+            # Adding 8 first players to the tournament
             tournament1.players.append(player1.index)
             tournament1.players.append(player2.index)
             tournament1.players.append(player3.index)
@@ -549,10 +502,10 @@ class Controller:
             tournament1.players.append(player8.index)
 
             # Creation d'un tournoi
-            tournament2 = Tournament("b", "Pau", "début2", "fin2", "blitz", "description blabla2")
-            # Ajout du tournoi à la liste des tournois
+            tournament2 = Tournament("b", "Pau", "11/11/2021", "12/12/2022", "blitz", "Description blabla2")
+            # Adding tournament to the list of tournaments
             Tournament.add_tournament_to_TOURNAMENTS_list(tournament2)
-            # Ajouter 8 joueurs au tournois:
+            # Adding 8 last players to the tournament
             tournament2.players.append(player9.index)
             tournament2.players.append(player10.index)
             tournament2.players.append(player11.index)
@@ -563,7 +516,6 @@ class Controller:
             tournament2.players.append(player16.index)
 
             self.run()
-            # ========================================================================
             # ========================================================================
 
         else:

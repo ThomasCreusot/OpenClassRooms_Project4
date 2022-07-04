@@ -19,7 +19,7 @@ class View:
             "If you want to add a player to a tournament , please press '3'" "\n"
 
             # Gain of time for testing.
-            "If you want to create 8 factices players and add them to a factice tournament, please write 'Test'" "\n"
+            "If you want to create 16 factices players and add them to 2 factice tournaments, please write 'Test'" "\n"
 
             "If you want to play a tournament, please press '4'" "\n"
             "If you want to update a player rank, please press '5'" "\n"
@@ -53,7 +53,7 @@ class View:
             tournament_time_controler, tournament_description
 
     def tournament_initialization_confirmation(self):
-        """Confirmation of the initialization of a tournament"""
+        """Confirms the initialization of a tournament"""
 
         print("The tournament has been created. ")
 
@@ -70,19 +70,19 @@ class View:
         return player_index, player_family_name, player_first_name, player_birth_date, player_gender, player_rank
 
     def player_initialization_confirmation(self):
-        """Confirmation of the initialization of a player"""
+        """Confirms the initialization of a player"""
 
         print("The player has been created. ")
 
     def players_order_choice(self):
-        """Asks the user if he wants to display players ordered by their family name or by their rank"""
+        """Asks the user if he/she wants to display players ordered by their family name or by their rank"""
 
         players_order_choice = input("Display players ordered by family name or by rank ? (Name/Rank) ")
 
         return players_order_choice
 
     def all_players_or_players_of_a_tournament(self):
-        """Asks the user if he wants to display all players or players from a specific tournament"""
+        """Asks the user if he/she wants to display all players or players from a specific tournament"""
 
         all_players_or_players_of_a_tournament = input("Do you want to display all players (All) or players from" "\n"
                                                        "a specific tournament (Tournament) ? (All/Tournament) ")
@@ -90,13 +90,13 @@ class View:
         return all_players_or_players_of_a_tournament
 
     def display_a_player(self, player):
-        """Prints a player """
+        """Displays a player """
 
         print("Index: {0} / Family name: {1} / First name: {2} / Rank: {3}".format(player.index, player.family_name,
                                                                                    player.first_name, player.rank))
 
     def information_for_adding_player_to_tournament(self):
-        """Asks information for adding a player to a tournament"""
+        """Asks required information for adding a player to a tournament"""
 
         information_tournament = input("In which tournament do you want to add a Player ? ")
         information_player = input("Which player do you want to add to the tournament ? Please write the index of" "\n"
@@ -105,7 +105,7 @@ class View:
         return information_tournament, information_player
 
     def information_tournament_to_play(self):
-        """Asks which tournament will be played"""
+        """Asks which tournament the user wants to play"""
 
         tournament_to_play_name = input("Which tournament will be played ? Please enter the name of the tournament. ")
         return tournament_to_play_name
@@ -146,18 +146,18 @@ class View:
         return ongoing_match_player_1_score, ongoing_match_player_2_score
 
     def wrong_tournament_time_controler(self):
-        """Advertissement about the time controler which is not in the list TIME_CONTROLERS"""
+        """Advertisses about the time controler which is not in the list TIME_CONTROLERS"""
 
         print("Advertissement: the chosen time controler is not an allowed one ({0})," "\n"
               "please try again".format(TIME_CONTROLERS))
 
     def wrong_player_rank(self):
-        """Advertissement about the rank which is not a positive number"""
+        """Advertisses about the rank which is not a positive number"""
 
         print("Advertissement: the rank is not a positive number, please try again")
 
     def wrong_player_score(self):
-        """Advertissement about the score which is not in the list SCORES or does not have a total equal to 1"""
+        """Advertisses about the score which is not in the list SCORES or does not have a total equal to 1"""
 
         print("Advertissement: the score is not an allowed one ({0}) or its sum is different from 1, please try" "\n"
               "again; your input has not been considered by the program".format(SCORES))
@@ -170,12 +170,12 @@ class View:
         return new_rank
 
     def wrong_player_index_or_rank(self):
-        """Advertissement about the index or the rank which is not an integer"""
+        """Advertisses about the index or the rank which is not an integer"""
 
         print("Advertissement: the index or the rank is not an integer, please try again")
 
     def tournament_results_displa_begin(self, ongoing_tournament_name, higher_player_name_lenght):
-        """Displays and introduction do the detailled results of a tournament"""
+        """Displays an introduction to the detailled results of a tournament"""
 
         space_in_display_if_long_family_name = max(higher_player_name_lenght-len("PLAYER")-1, len("PLAYER"))
 
@@ -192,7 +192,8 @@ class View:
         # player_total_score_at_tournament_scale, player_rank))
 
     def tournament_results_display_ending(self):
-        """Print for nice display"""
+        """Prints for nice display"""
+
         print("===================CONGRATS ALL !===================")
 
     def information_for_updating_player_rank(self):
@@ -212,7 +213,7 @@ class View:
         return information_tournament
 
     def display_all_tournaments(self, all_registered_tournaments):
-        """Displays alltournaments"""
+        """Displays all tournaments"""
 
         for tournament in all_registered_tournaments:
             print("LIST OF ALL TOURNAMENTS")
@@ -236,22 +237,6 @@ class View:
         for round in list_of_rounds:
             print("Round named {0} began on {1} and ended on {2}".format(round.name, round.date_and_time_beginning,
                   round.date_and_time_ending))
-    # Match display : First version
-    # def display_matches_result(self, matches_tuples_representation_list):
-    #    """Displays all matches of a tournament"""
-
-    #    for matches_tuples_representation in matches_tuples_representation_list:
-    #        print()
-    #        print("Round {0}".format(matches_tuples_representation[0][3]))
-    #        for match_tuple in matches_tuples_representation:
-    #            print("")
-    #            print("    Match result")
-    #            print("    Player with index {0} played against player with index {1}; results are as follows:".
-    # format(match_tuple[0][0], match_tuple[1][0]))
-    #            print("        Player index {0} score of the match: {1}".format(match_tuple[0][0], match_tuple[0][1]))
-    #            print("        Player index {0} score of the match: {1}".format(match_tuple[1][0], match_tuple[1][1]))
-
-    # Match display : second version
 
     def display_match_result_round_announcement_part(self, round_name):
         """Displays round name"""
@@ -260,7 +245,6 @@ class View:
         print()
         print("Matches results of round {0}".format(round_name))
 
-    # Match display : second version
     def display_match_result(self, player_1_first_name, player_1_family_name, player_2_first_name,
                              player_2_family_name, player_1_score, player_2_score):
         """Displays a match of a round"""
@@ -272,7 +256,7 @@ class View:
         print("    {0} {1} : {2}".format(player_2_first_name, player_2_family_name, player_2_score))
 
     def even_players_alert():
-        """Alerts the user that the number of players is event"""
+        """Alerts the user that the number of players is even"""
 
         print("The number of players is even, pairs have not been created")
 
@@ -298,6 +282,6 @@ class View:
         print("Confirmation, the action about the database has been performed")
 
     def wrong_you_did_not_answer_a_number(self):
-        """Advertissement about the value given by the user that should be a number"""
+        """Advertisses about the value given by the user that should be a number"""
 
         print("Advertissement: you did not answer a number")

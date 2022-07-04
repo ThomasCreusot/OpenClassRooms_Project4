@@ -13,9 +13,9 @@ class Match:
     def match_tuple_representation(self):
         """Returns a representation of the match, under a tuple format """
 
-        # j'ajoute nom du tournois et du round pour l'import depuis la bdd, j'aurai pu créer une fonction
-        # match_serialisation, mais il aurait fallu créer une nouvelle table dans la base de données étant donné que
-        # les rounds ne contiennent pas les instances de match mais leur représentation sous forme de liste
+        # I add the tournament and round names for import from the database; I could create a function
+        # match_serialisation, however, it implies to create a new table in the databse as rounds do not contain
+        # matches instances but their representation as lists
         self.match_tuple_representation = ([self.player_1_index, self.player_1_score],
                                            [self.player_2_index, self.player_2_score],
                                            self.name_of_tournament_in_which_match_was_played,
