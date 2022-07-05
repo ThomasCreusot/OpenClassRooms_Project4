@@ -7,19 +7,19 @@ The present project is the fourth one of the training course *Python Application
 
 The main goal is to develop an **offline program** wich allows to **manage and record chess tournaments**.
 This program must:
--follow the **MVC (Model, View, Controller) design pattern**
--allow to **save and load data in/from a database** (use of tinyDB)
--be compliant with **PEP8**
+- follow the **MVC (Model, View, Controller) design pattern**
+- allow to **save and load data in/from a database** (use of tinyDB)
+- be compliant with **PEP8**
 
 When executed, the program invites the user to : 
--Create a tournament
--Create a player
--Associate a player within a tournament
--Play a tournament (see Note, hereunder)
--Update a player rank
--Display players (all players, or players of a specific tournament; sorted by name or by rank)
--Display all tournaments, all rounds of a tournament or all matches of a tournament
--Access the database options: save or load players and/or tournament data
+- Create a tournament
+- Create a player
+- Associate a player within a tournament
+- Play a tournament (see Note, hereunder)
+- Update a player rank
+- Display players (all players, or players of a specific tournament; sorted by name or by rank)
+- Display all tournaments, all rounds of a tournament or all matches of a tournament
+- Access the database options: save or load players and/or tournament data
 
 Note about tournaments: the tournaments organisation follows the *"Swiss tournament system"* which is as follows:
 -For the first round: players are sorted by their rank. The list of players is separated in two halves: the higher one and the lower one.
@@ -35,34 +35,34 @@ Please follow theses instructions:
 
 1. Open your Shell 
 -Windows: 
-*windows + R* 
-> *cmd*  
+>'windows + R' 
+>'cmd'  
 -Mac: 
-*Applications > Utilitaires > Terminal.app*
+>'Applications > Utilitaires > Terminal.app'
 
 2. Find the folder which contains the program (with *cd* command)
 
 3. Create a virtual environment: write the following command in the console
-*python -m venv env*
+>'python -m venv env'
 
 4. Activate this virtual environment : 
 -Linux or Mac: write the following command in the console
-*source env/bin/activate*
+>'source env/bin/activate'
 -Windows: write the following command in the console 
-*env\Scripts\activate.bat*
+>'env\Scripts\activate.bat'
 
 5. Install the python packages recorded in the *requirements.txt* file : write in the console the following command
-*pip install -r requirements.txt*
+>'pip install -r requirements.txt'
 
 ## To execute the program
 Please follow this instruction
 6. Execute the code : write the following command in the console (Python must be installed on your computer and virtual environment must be activated)
-*python main.py*
+>'python main.py'
 
 
 # Flake8 report generation
 Please follow theses instructions:
 1. Open your shell, find the folder which contains the program, and activate the virtual environment (see instructions above)
 2. Execute the code : write the following command in the console
-*flake8 --max-line-length 119 --format=html --htmldir=flake-report --exclude env*
+>'flake8 --max-line-length 119 --format=html --htmldir=flake-report --exclude env'
 3. The report has been generated in the 'flake-report' folder, which is located at the same location than the programm.
