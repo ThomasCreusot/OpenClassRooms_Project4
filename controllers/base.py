@@ -459,14 +459,14 @@ class Controller:
             player7 = Player(7, "family_name_7", "first_name_7", "birth_date_7", "gender_7", 7)
             player8 = Player(8, "family_name_8", "first_name_8", "birth_date_8", "gender_8", 8)
 
-            player9 = Player(9, "family_name_", "first_name_9", "birth_date_9", "gender_9", 9)
-            player10 = Player(10, "family_name_", "first_name_10", "birth_date_10", "gender_10", 10)
-            player11 = Player(11, "family_name_", "first_name_11", "birth_date_11", "gender_11", 11)
-            player12 = Player(12, "family_name_", "first_name_12", "birth_date_12", "gender_12", 12)
-            player13 = Player(13, "family_name_", "first_name_13", "birth_date_13", "gender_13", 13)
-            player14 = Player(14, "family_name_", "first_name_14", "birth_date_14", "gender_14", 14)
-            player15 = Player(15, "family_name_", "first_name_15", "birth_date_15", "gender_15", 15)
-            player16 = Player(16, "family_name_", "first_name_16", "birth_date_16", "gender_16", 16)
+            player9 = Player(9, "family_name_9", "first_name_9", "birth_date_9", "gender_9", 9)
+            player10 = Player(10, "family_name_10", "first_name_10", "birth_date_10", "gender_10", 10)
+            player11 = Player(11, "family_name_11", "first_name_11", "birth_date_11", "gender_11", 11)
+            player12 = Player(12, "family_name_12", "first_name_12", "birth_date_12", "gender_12", 12)
+            player13 = Player(13, "family_name_13", "first_name_13", "birth_date_13", "gender_13", 13)
+            player14 = Player(14, "family_name_14", "first_name_14", "birth_date_14", "gender_14", 14)
+            player15 = Player(15, "family_name_15", "first_name_15", "birth_date_15", "gender_15", 15)
+            player16 = Player(16, "family_name_16", "first_name_16", "birth_date_16", "gender_16", 16)
 
             # Adding each player (class instance) to the class attribute PLAYERS which is the list of all players
             Player.add_player_to_PLAYERS_list(player1)
