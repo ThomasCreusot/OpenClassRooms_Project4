@@ -106,10 +106,10 @@ class Controller:
         for player in list_of_tournament_players:
             newrank = self.view.rank_player_information(player)
 
-            if newrank.isdigit():
+            try:
+                newrank = int(newrank)
                 player.rank = newrank
-
-            else:
+            except ValueError:
                 self.view.wrong_player_rank()
                 self.player_rank_manual_modification(self, tournament)
 
